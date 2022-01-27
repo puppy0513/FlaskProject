@@ -1,8 +1,13 @@
 from flask import Blueprint, render_template, url_for , request
 from werkzeug.utils import redirect
+from werkzeug.utils import secure_filename
+import os
+from flask import Flask, request
 
 
 bp = Blueprint('main', __name__, url_prefix='/')
+app = Flask(__name__)
+app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
 
 from pybo.models import Question
 
@@ -25,9 +30,7 @@ def upload_file():
     if request.method == 'POST':
         f = request.files['file']
         # 저장할 경로 + 파일명
-        f.save(secure_filename(f.filename))
-        return 'uploads 디렉토리 -> 파일 업로드 성공!'
-
-
+        f.save("./pybo/uploads/" + secure_filename(f.filename))
+        return render_template('upload2.html')
 
 

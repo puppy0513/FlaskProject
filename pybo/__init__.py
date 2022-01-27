@@ -11,6 +11,7 @@ migrate = Migrate()
 def create_app():
     app = Flask(__name__)
     app.config.from_object(config)
+    app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
 
     # ORM
     db.init_app(app)
