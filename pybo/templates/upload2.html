@@ -7,7 +7,15 @@
     <title>Title</title>
 </head>
 <body>
-    파일 업로드 성공!
+    <table class="table">
+   <p>
+         <button type="button" onclick="location.href='/' ">뒤로가기</button>
+    </p>
+        <td>
+            {{ df_list }}
+        </td>
+        </table>
+    <a href="{{ url_for('main.to_json') }}" class="btn btn-primary" >다음</a>
 </body>
 </html>
 
