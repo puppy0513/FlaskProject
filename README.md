@@ -21,3 +21,6 @@ flask run 해주시면 됩니다
 - 파일업로드 시 현재 로그인한 아이디로 id.csv파일 생성
 - 데이터 타입을 식별 후 로그인한 id.json 파일 생성
 - 재현데이터 생성 후 id.csv파일로 synth_dir로 저장
+# V3.2
+- 업로드 된 파일 분포도 시각화 이미지 static/img_dir에 저장(id + dis.png로 저장)
+- distribution.html 에서 출력
