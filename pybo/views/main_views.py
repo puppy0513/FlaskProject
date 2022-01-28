@@ -1,5 +1,4 @@
 import time
-
 from flask import Blueprint, render_template, url_for , request, session, jsonify, g
 from werkzeug.utils import redirect
 from werkzeug.utils import secure_filename
@@ -11,6 +10,10 @@ from werkzeug.routing import BaseConverter, ValidationError
 from synthpop import Synthpop
 from warnings import simplefilter
 simplefilter(action="ignore", category=pd.errors.PerformanceWarning)
+import matplotlib
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
+
 
 bp = Blueprint('main', __name__, url_prefix='/')
 app = Flask(__name__)
@@ -92,7 +95,7 @@ def to_json():
         
         return render_template('to_json.html', df=df_info, df_col=df_col)
     
-# json 생성
+# json 생성 및 재현데이터 생성
 @bp.route('/synth_generate', methods=['GET', 'POST'])
 def synth_generate():
         obj = g.user.username
@@ -111,9 +114,35 @@ def synth_generate():
 
         synth_df = spop.generate(len(df))
         synth_df2 = synth_df.iloc[:10]
-        synth_df.to_csv("C:/finalproject/myproject/pybo/synth_dir/" + obj + ".csv")
+        synth_df.to_csv("C:/finalproject/myproject/pybo/synth_dir/" + obj + ".csv", index= False)
         return render_template('synth_generate.html', df=synth_df2, dtypes=synth_df.dtypes)
         # return render_template('synth_generate.html', df=df, dtypes=dtypes)
+
+
+# json 생성
+@bp.route('/distribution', methods=['GET', 'POST'])
+def distribution():
+    obj = g.user.username
+    original_data = pd.read_csv("C:/finalproject/myproject/pybo/uploads/" + obj + ".csv")
+    synth_data = pd.read_csv("C:/finalproject/myproject/pybo/synth_dir/" + obj + ".csv")
+    cate_col = []
+    for i in range(0, len(original_data.columns)):
+        if original_data.dtypes[i] != 'object':
+            cate_col.append(original_data.columns[i])
+    fig = plt.figure()
+    rows = 1
+    cols = len(cate_col)
+    for i in range(0, cols):
+        plt.subplot(1, cols, i + 1)
+        plt.hist(synth_data[cate_col[i]], alpha=0.3)
+        plt.hist(original_data[cate_col[i]], alpha=0.3)
+        plt.title(cate_col[i])
+        plt.legend(['synth', 'origin'])
+        plt.savefig('C:/finalproject/myproject/pybo/static/img_dir/' + obj + 'dis.png')
+
+    return render_template('distribution.html', image_file='/img_dir/'+ obj + 'dis.png')
+
+
 
 
 
