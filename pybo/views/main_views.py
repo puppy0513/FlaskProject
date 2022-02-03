@@ -43,6 +43,10 @@ def index():
 # 업로드 HTML 렌더링
 @bp.route('/upload')
 def render_file():
+    file = "C:/finalproject/myproject/pybo/uploads/" + obj + ".csv"
+    if os.path.isfile(file):
+        os.remove(file)
+
     return render_template('upload.html')
 
 global obj
@@ -171,6 +175,9 @@ def correlation():
 
 @bp.route('/hello3')
 def hello_pybo3():
+    file = "C:/finalproject/myproject/pybo/uploads/" + obj + ".csv"
+    if os.path.isfile(file):
+        os.remove(file)
     obj = g.user.username
     path = "C:/finalproject/myproject/pybo/synth_dir/" + obj + ".csv"
     return send_file(path, as_attachment=True)
