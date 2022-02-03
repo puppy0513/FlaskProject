@@ -1,8 +1,8 @@
 # 7조 FlaskProject
 
-먼저 폴더 아무거나 만드시고 여기 안의 파일들 넣어주세요(git clone)
+먼저 여기 안의 파일들 다운 받아주세요(git clone)
 
-그다음 cmd창에서 그 폴더에 들어가시고
+그다음 cmd창에서 FlaskProject에 들어가시고
 
 set flask_app=pybo
 set flask_env=development
