@@ -57,9 +57,9 @@ def upload_file():
 
         obj = g.user.username
         #  ff = pd.DataFrame(data = f)
-        f.save("C:/finalproject/myproject/pybo/uploads/" + obj + '.csv')
+        f.save("/home/ubuntu/projects/myproject/pybo/uploads/" + obj + '.csv')
         # fff = pd.read_csv("C:/finalproject/myproject/pybo/uploads/" + obj + '.csv', encoding='CP949')
-        fff = pd.read_csv("C:/finalproject/myproject/pybo/uploads/" + obj + '.csv')
+        fff = pd.read_csv("/home/ubuntu/projects/myproject/pybo/uploads/" + obj + '.csv')
         # return f.to_html()
         df_info = fff
         df_col = []
@@ -76,7 +76,7 @@ def upload_file():
 @bp.route('/to_json', methods=['GET', 'POST'])
 def to_json():
         obj = g.user.username
-        df_info = pd.read_csv("C:/finalproject/myproject/pybo/uploads/" + obj + ".csv")
+        df_info = pd.read_csv("/home/ubuntu/projects/myproject/pybo/uploads/" + obj + ".csv")
         df_col = []
 
         for i in range(0, len(df_info.columns)):
@@ -94,7 +94,7 @@ def to_json():
         # 이렇게 dict로 주지 않으면 list형식으로 들어감 ;
         for i in range(1, len(df_info.columns)):
             to_json[df_col[i]] = df_type[i]
-        with open("C:/finalproject/myproject/pybo/uploads/" + obj + ".json", 'w') as f:
+        with open("/home/ubuntu/projects/myproject/pybo/uploads/" + obj + ".json", 'w') as f:
             json.dump(to_json, f)
         
         return render_template('to_json.html', df=df_info, df_col=df_col)
@@ -105,11 +105,11 @@ def synth_generate():
         obj = g.user.username
 
         # df = pd.read_csv("C:/finalproject/myproject/pybo/uploads/" + obj + ".csv")
-        with open("C:/finalproject/myproject/pybo/uploads/" + obj + ".json", 'r') as f:
+        with open("/home/ubuntu/projects/myproject/pybo/uploads/" + obj + ".json", 'r') as f:
             dtypes = json.load(f)
         columns = list(dtypes.keys())
 
-        df = pd.read_csv("C:/finalproject/myproject/pybo/uploads/" + obj + ".csv", header=None, skiprows = 1, names=columns).astype(dtypes)
+        df = pd.read_csv("/home/ubuntu/projects/myproject/pybo/uploads/" + obj + ".csv", header=None, skiprows = 1, names=columns).astype(dtypes)
         # 헤더가 있는 경우 -> skip
         df.apply(pd.to_numeric, errors='coerce')
 
@@ -118,7 +118,7 @@ def synth_generate():
 
         synth_df = spop.generate(len(df))
         synth_df2 = synth_df.iloc[:10]
-        synth_df.to_csv("C:/finalproject/myproject/pybo/synth_dir/" + obj + ".csv", index= False)
+        synth_df.to_csv("/home/ubuntu/projects/myproject/pybo/synth_dir/" + obj + ".csv", index= False)
         return render_template('synth_generate.html', df=synth_df2, dtypes=synth_df.dtypes)
         # return render_template('synth_generate.html', df=df, dtypes=dtypes)
 
@@ -127,8 +127,8 @@ def synth_generate():
 @bp.route('/distribution', methods=['GET', 'POST'])
 def distribution():
     obj = g.user.username
-    original_data = pd.read_csv("C:/finalproject/myproject/pybo/uploads/" + obj + ".csv")
-    synth_data = pd.read_csv("C:/finalproject/myproject/pybo/synth_dir/" + obj + ".csv")
+    original_data = pd.read_csv("/home/ubuntu/projects/myproject/pybo/uploads/" + obj + ".csv")
+    synth_data = pd.read_csv("/home/ubuntu/projects/myproject/pybo/synth_dir/" + obj + ".csv")
     cate_col = []
     for i in range(0, len(original_data.columns)):
         if original_data.dtypes[i] != 'object':
@@ -142,7 +142,7 @@ def distribution():
         plt.hist(original_data[cate_col[i]], alpha=0.3)
         plt.title(cate_col[i])
         plt.legend(['synth', 'origin'])
-        plt.savefig('C:/finalproject/myproject/pybo/static/img_dir/' + obj + 'dis.png')
+        plt.savefig('/home/ubuntu/projects/myproject/pybo/static/img_dir/' + obj + 'dis.png')
 
     plt.close()
     return render_template('distribution.html', image_file='/img_dir/'+ obj + 'dis.png')
@@ -152,19 +152,19 @@ def distribution():
 def correlation():
     obj = g.user.username
     plt.close()
-    original_data = pd.read_csv("C:/finalproject/myproject/pybo/uploads/" + obj + ".csv")
-    synth_data = pd.read_csv("C:/finalproject/myproject/pybo/synth_dir/" + obj + ".csv")
+    original_data = pd.read_csv("/home/ubuntu/projects/myproject/pybo/uploads/" + obj + ".csv")
+    synth_data = pd.read_csv("/home/ubuntu/projects/myproject/pybo/synth_dir/" + obj + ".csv")
     corr_df = original_data.corr()
     corr_df = corr_df.apply(lambda x: round(x, 2))
 
     ax = sns.heatmap(corr_df, annot=True, annot_kws=dict(color='g'), cmap='Greys')
-    plt.savefig('C:/finalproject/myproject/pybo/static/img_dir/' + obj + 'origincorr.png')
+    plt.savefig('/home/ubuntu/projects/myproject/pybo/static/img_dir/' + obj + 'origincorr.png')
     plt.close()
     corr_df2 = synth_data.corr()
     corr_df2 = corr_df2.apply(lambda x: round(x, 2))
 
     ax2 = sns.heatmap(corr_df2, annot=True, annot_kws=dict(color='g'), cmap='Greys')
-    plt.savefig('C:/finalproject/myproject/pybo/static/img_dir/' + obj + 'synthcorr.png')
+    plt.savefig('/home/ubuntu/projects/myproject/pybo/static/img_dir/' + obj + 'synthcorr.png')
     plt.close()
 
     return render_template('correlation.html', synth_file='/img_dir/'+ obj + 'synthcorr.png', origin_file='/img_dir/'+ obj + 'origincorr.png')
@@ -172,7 +172,7 @@ def correlation():
 @bp.route('/hello3')
 def hello_pybo3():
     obj = g.user.username
-    path = "C:/finalproject/myproject/pybo/synth_dir/" + obj + ".csv"
+    path = "/home/ubuntu/projects/myproject/pybo/synth_dir/" + obj + ".csv"
     return send_file(path, as_attachment=True)
 
 @bp.route('/hello')
