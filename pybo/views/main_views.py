@@ -13,6 +13,14 @@ simplefilter(action="ignore", category=pd.errors.PerformanceWarning)
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
+import seaborn as sns
+import numpy as np
+#warning
+import warnings
+warnings.filterwarnings('ignore')
+from flask import send_file
+from flask import send_from_directory
+
 
 
 bp = Blueprint('main', __name__, url_prefix='/')
@@ -25,10 +33,6 @@ from pybo.models import Question
 # from pybo.synthpop.datasets.adult import df, dtypes
 
 
-@bp.route('/hello')
-def hello_pybo():
-    fff = pd.read_csv("C:/finalproject/myproject/pybo/uploads/" + g.user.username + ".csv")
-    return fff.to_html()
 
 
 
@@ -119,7 +123,7 @@ def synth_generate():
         # return render_template('synth_generate.html', df=df, dtypes=dtypes)
 
 
-# json 생성
+# 유사도 측정
 @bp.route('/distribution', methods=['GET', 'POST'])
 def distribution():
     obj = g.user.username
@@ -140,7 +144,47 @@ def distribution():
         plt.legend(['synth', 'origin'])
         plt.savefig('C:/finalproject/myproject/pybo/static/img_dir/' + obj + 'dis.png')
 
+    plt.close()
     return render_template('distribution.html', image_file='/img_dir/'+ obj + 'dis.png')
+
+# 상관관계 분석 - 수치형만
+@bp.route('/correlation', methods=['GET', 'POST'])
+def correlation():
+    obj = g.user.username
+    plt.close()
+    original_data = pd.read_csv("C:/finalproject/myproject/pybo/uploads/" + obj + ".csv")
+    synth_data = pd.read_csv("C:/finalproject/myproject/pybo/synth_dir/" + obj + ".csv")
+    corr_df = original_data.corr()
+    corr_df = corr_df.apply(lambda x: round(x, 2))
+
+    ax = sns.heatmap(corr_df, annot=True, annot_kws=dict(color='g'), cmap='Greys')
+    plt.savefig('C:/finalproject/myproject/pybo/static/img_dir/' + obj + 'origincorr.png')
+    plt.close()
+    corr_df2 = synth_data.corr()
+    corr_df2 = corr_df2.apply(lambda x: round(x, 2))
+
+    ax2 = sns.heatmap(corr_df2, annot=True, annot_kws=dict(color='g'), cmap='Greys')
+    plt.savefig('C:/finalproject/myproject/pybo/static/img_dir/' + obj + 'synthcorr.png')
+    plt.close()
+
+    return render_template('correlation.html', synth_file='/img_dir/'+ obj + 'synthcorr.png', origin_file='/img_dir/'+ obj + 'origincorr.png')
+
+@bp.route('/hello3')
+def hello_pybo3():
+    obj = g.user.username
+    path = "C:/finalproject/myproject/pybo/synth_dir/" + obj + ".csv"
+    return send_file(path, as_attachment=True)
+
+@bp.route('/hello')
+def hello_pybo():
+    obj = g.user.username
+    return obj
+
+@bp.route('/hello2')
+def hello_pybo2():
+    return render_template('download.html')
+
+
 
 
 
