@@ -11,3 +11,5 @@ set flask_env=development
 flask run 해주시면 됩니다
 
 ![image](https://user-images.githubusercontent.com/92296556/151277485-3b4535cd-538c-4cef-a0c9-464b3c3d7d67.png
+
+# Local버전
