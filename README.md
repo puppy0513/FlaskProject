@@ -24,3 +24,7 @@ flask run 해주시면 됩니다
 # V3.2
 - 업로드 된 파일 분포도 시각화 이미지 static/img_dir에 저장(id + dis.png로 저장)
 - distribution.html 에서 출력
+
+# 20220203 추가사항 V4.0
+- 수치형 데이터 상관관계 분석 및 이미지 출력(static/img_dir에 저장)
+- 생성된 재현데이터 다운로드 가능(userid.csv로)
