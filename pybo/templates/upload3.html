@@ -7,15 +7,15 @@
     <title>Title</title>
 </head>
 <body>
-	<div class="container">
-  <!-- Content here -->
-
-       <p>{{dtypes}}</p>
+       <p>{{df_col}}</p>
 	<table border = '' class = "table">
-			{{ df }}
+			{% for item in df %}
+		<tr>
+				<option>{{item}}</option>
+		</tr>
+			{% endfor %}
 	</table>
-		</div>
-	<a href="{{ url_for('main.distribution') }}" class="btn btn-primary" >다음</a>
+	<a href="{{ url_for('main.upload_file4') }}" class="btn btn-primary" >다음</a>
 </body>
 </html>
 

@@ -20,7 +20,7 @@ import warnings
 warnings.filterwarnings('ignore')
 from flask import send_file
 from flask import send_from_directory
-
+from pybo.views.auth_views import login_required
 
 
 bp = Blueprint('main', __name__, url_prefix='/')
@@ -32,24 +32,32 @@ from pybo.models import Question
 # from datasets.adult import df, dtypes
 # from pybo.synthpop.datasets.adult import df, dtypes
 
+global obj
+
+@bp.route('/manual')
+def manual():
+    return render_template('manual.html')
 
 
-
-
-@bp.route('/')
+@bp.route('/index')
 def index():
     return redirect(url_for('question._list'))
 
+
+@bp.route('/')
+def main():
+    return render_template('main.html')
+
 # 업로드 HTML 렌더링
 @bp.route('/upload')
+@login_required
 def render_file():
-    file = "C:/finalproject/myproject/pybo/uploads/" + obj + ".csv"
-    if os.path.isfile(file):
-        os.remove(file)
 
     return render_template('upload.html')
 
-global obj
+
+
+
 
 # 파일 업로드 처리
 @bp.route('/fileUpload', methods = ['GET', 'POST'])
@@ -69,8 +77,8 @@ def upload_file():
         df_col = []
         for i in range(0, len(df_info.columns)):
             df_col.append(df_info.columns[i])
-    
-        
+
+
         df2 = df_info.iloc[:10]
 
         return render_template('upload2.html', df_list=df2, df_col = df_col, df_info=df_info)
@@ -175,13 +183,19 @@ def correlation():
 
 @bp.route('/hello3')
 def hello_pybo3():
+    obj = g.user.username
+
     file = "C:/finalproject/myproject/pybo/uploads/" + obj + ".csv"
     if os.path.isfile(file):
         os.remove(file)
-    obj = g.user.username
     path = "C:/finalproject/myproject/pybo/synth_dir/" + obj + ".csv"
+    file2 = "C:/finalproject/myproject/pybo/uploads/" + obj + ".json"
+    if os.path.isfile(file2):
+        os.remove(file2)
+
     return send_file(path, as_attachment=True)
 
+# ------------------ 여기부터는 연습용-----------------------
 @bp.route('/hello')
 def hello_pybo():
     obj = g.user.username

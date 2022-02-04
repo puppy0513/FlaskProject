@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>사용 메뉴얼</title>
+</head>
+<body>
+    <video autoplay loop muted>
+    <source src="{{url_for('static', filename='exam_video.mp4') }}" type="video/mp4">
+    </video>
+    <div class="container">
+
+
+    </div>
+    <hr>
+	<a href="{{ url_for('main.render_file') }}" class="btn btn-primary" >재현데이터 생성하러 가기</a>
+</body>
+</html>
+
+
+{% endblock %}
