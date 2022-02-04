@@ -13,4 +13,4 @@ flask run 해주시면 됩니다
 ![image](https://user-images.githubusercontent.com/92296556/151277485-3b4535cd-538c-4cef-a0c9-464b3c3d7d67.png
 
 # Local버전
-- V4.4 까지 업로드 완료
+- V4.5 까지 업로드 완료
