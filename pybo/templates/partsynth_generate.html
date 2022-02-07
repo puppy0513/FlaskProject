@@ -8,17 +8,14 @@
 </head>
 <body>
 	<div class="container">
-       <p>{{df_col}}</p>
+  <!-- Content here -->
+
+       <p>{{dtypes}}</p>
 	<table border = '' class = "table">
-			{% for item in df %}
-		<tr>
-				<option>{{item}}</option>
-		</tr>
-			{% endfor %}
+			{{ df }}
 	</table>
 		</div>
-	<a href="{{ url_for('main.synth_generate') }}" class="btn btn-primary" >다음</a>
-
+	<a href="{{ url_for('main.distribution') }}" class="btn btn-primary" >다음</a>
 </body>
 </html>
 
