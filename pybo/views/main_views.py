@@ -230,9 +230,21 @@ def partsynth_generate():
         spop.fit(df, dtypes)
 
         synth_df = spop.generate(len(df))
-        synth_df2 = synth_df.iloc[:10]
-        synth_df.to_csv("C:/finalproject/myproject/pybo/synth_dir/" + obj + ".csv", index= False)
-        return render_template('partsynth_generate.html', df=synth_df2, dtypes=synth_df.dtypes)
+        df_col = []
+        for i in range(0, len(df.columns)):
+            df_col.append(df.columns[i])
+        list1 = []
+        if request.method == 'POST':
+            for i in range(0, len(df_col)):
+                list1.append(request.form.get(df_col[i]))
+        list2 = list(filter(None.__ne__, list1))
+        df = df.drop(list2, axis=1)
+        synth_df2 = synth_df[list2]
+        result = pd.concat([df, synth_df2], axis=1)
+
+        result2 = result.iloc[:10]
+        result.to_csv("C:/finalproject/myproject/pybo/synth_dir/" + obj + ".csv", index= False)
+        return render_template('partsynth_generate.html', df=result2, dtypes=result2.dtypes)
 
 
 
@@ -298,7 +310,7 @@ def hello_pybo3():
 
     return send_file(path, as_attachment=True)
 
-# ------------------ 여기부터는 연습용-----------------------
+# -------------------------------------- 여기부터는 연습용------------------------------------
 @bp.route('/hello',  methods=['GET','POST'])
 def hello_pybo():
     obj = g.user.username
