@@ -5,5 +5,5 @@ files:
     destination: /home/ubuntu/build
 hooks:
   AfterInstall:
-    - location: /start.sh
+    - location: /home/ubuntu/start.sh
       runas: root
