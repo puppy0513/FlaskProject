@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <table class="table">
+   <p>
+         <button type="button" onclick="location.href='/' ">뒤로가기</button>
+    </p>
+        <td>
+            {{ df_list }}
+        </td>
+        </table>
+    <a href="{{ url_for('main.to_json') }}" class="btn btn-primary" >완전 재현데이터</a>
+    <a href="{{ url_for('main.to_json_part') }}" class="btn btn-primary">부분 재현데이터</a>
+</body>
+</html>
+
+
+{% endblock %}
+

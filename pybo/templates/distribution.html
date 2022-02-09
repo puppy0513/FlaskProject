@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+      <h1>Chart</h1>
+{%if True %}
+      <div>
+  <img src="{{  url_for('static', filename = image_file) }}">
+    </div>
+      {% endif %}
+          <hr>
+	<a href="{{ url_for('main.correlation') }}" class="btn btn-primary" >다음</a>
+
+   </body>
+</html>
+
+{% endblock %}

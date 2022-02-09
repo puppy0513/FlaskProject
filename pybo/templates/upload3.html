@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+       <p>{{df_col}}</p>
+	<table border = '' class = "table">
+			{% for item in df %}
+		<tr>
+				<option>{{item}}</option>
+		</tr>
+			{% endfor %}
+	</table>
+	<a href="{{ url_for('main.upload_file4') }}" class="btn btn-primary" >다음</a>
+</body>
+</html>
+
+
+{% endblock %}
