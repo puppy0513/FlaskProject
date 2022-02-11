@@ -67,12 +67,16 @@ def main():
 def render_file():
     obj = g.user.username
     file = "/home/ubuntu/projects/FlaskProject/pybo/uploads/" + obj + ".csv"
-    if os.path.isfile(file):
+    try:
         os.remove(file)
+    except OSError:
+        pass
 
     file2 = "/home/ubuntu/projects/FlaskProject/pybo/uploads/" + obj + ".json"
-    if os.path.isfile(file2):
+    try:
         os.remove(file2)
+    except OSError:
+        pass
 
     return render_template('upload.html')
 
@@ -426,13 +430,18 @@ def hello_pybo3():
     obj = g.user.username
 
     file = "/home/ubuntu/projects/FlaskProject/pybo/uploads/" + obj + ".csv"
-    if os.path.isfile(file):
+    try:
         os.remove(file)
+    except OSError:
+        pass
+
     syn = "/home/ubuntu/projects/FlaskProject/pybo/synth_dir/" + obj + str(index_add_counter) + ".csv"
 
     file2 = "/home/ubuntu/projects/FlaskProject/pybo/uploads/" + obj + ".json"
-    if os.path.isfile(file2):
+    try:
         os.remove(file2)
+    except OSError:
+        pass
 
     return send_file(syn, as_attachment=True)
 
