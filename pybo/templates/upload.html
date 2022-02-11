@@ -6,10 +6,21 @@
     <meta charset="UTF-8">
     <title>Title</title>
 </head>
+<style>
+  
+   #input1{
+       width:300px;
+       height:300px;
+   }
+
+
+
+</style>
+
 <body>
-    <form action = "http://3.35.14.209:5000/fileUpload" method ="POST" enctype="multipart/form-data">
-        <input type="file" name = "file"/>
-        <input type = "submit"/>
+    <form action = "http://localhost:5000/fileUpload" method ="POST" enctype="multipart/form-data">
+        <input id="input1" type="file" name = "file"/>
+        <input class="btn btn-primary" type = "submit"/>
     </form>
 </body>
 </html>

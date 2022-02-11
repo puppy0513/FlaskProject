@@ -1,8 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>{% extends 'base.html' %}
+{% extends 'base.html' %}
 {% block content %}
 
 
@@ -407,11 +403,9 @@ url("https://static.wixstatic.com/ufonts/fee50a_707675c31fc248b1a37b55e6dea8826f
 </h1></div>
 <div id="comp-iqm2knvh" aria-disabled="false" class="_2UgQw">
 <a data-testid="linkElement"
- href="/manual"
-  target="_self" class="_1fbEI" aria-disabled="false"><span class="_1Qjd7">사용자설명서</span></a></div></div></div></div></div></section><section id="comp-jx38cb1y" class="_3d64y"><div id="bgLayers_comp-jx38cb1y" data-hook="bgLayers" class="_3wnIc"><div data-testid="colorUnderlay" class="_3KzuS _3SQN-"></div><div id="bgMedia_comp-jx38cb1y" class="_2GUhU"></div></div><div data-testid="columns" class="_1uldx"><div id="comp-jx38cb2p" class="_1vNJf"><div id="bgLayers_comp-jx38cb2p" data-hook="bgLayers" class="_3wnIc"><div data-testid="colorUnderlay" class="_3KzuS _3SQN-"></div><div id="bgMedia_comp-jx38cb2p" class="_2GUhU"></div></div><div data-mesh-id="comp-jx38cb2pinlineContent" data-testid="inline-content" class=""><div data-mesh-id="comp-jx38cb2pinlineContent-gridContainer" data-testid="mesh-container-content"><div id="comp-jz8b0dne" class="_1KV2M"><div data-mesh-id="comp-jz8b0dneinlineContent" data-testid="inline-content" class=""><div data-mesh-id="comp-jz8b0dneinlineContent-gridContainer" data-testid="mesh-container-content"><div id="comp-jx38mfzd" class="_1Q9if" data-testid="richTextElement"><h2 class="font_2" style="font-size:70px; line-height:1.3em;"><span style="font-size:70px;"><span style="font-family:wfont_fee50a_707675c31fc248b1a37b55e6dea8826f,wf_707675c31fc248b1a37b55e6d,orig_nanumgothic_bold;">
+ href="auth/login/"
+  target="_self" class="_1fbEI" aria-disabled="false"><span class="_1Qjd7">시작하기</span></a></div></div></div></div></div></section><section id="comp-jx38cb1y" class="_3d64y"><div id="bgLayers_comp-jx38cb1y" data-hook="bgLayers" class="_3wnIc"><div data-testid="colorUnderlay" class="_3KzuS _3SQN-"></div><div id="bgMedia_comp-jx38cb1y" class="_2GUhU"></div></div><div data-testid="columns" class="_1uldx"><div id="comp-jx38cb2p" class="_1vNJf"><div id="bgLayers_comp-jx38cb2p" data-hook="bgLayers" class="_3wnIc"><div data-testid="colorUnderlay" class="_3KzuS _3SQN-"></div><div id="bgMedia_comp-jx38cb2p" class="_2GUhU"></div></div><div data-mesh-id="comp-jx38cb2pinlineContent" data-testid="inline-content" class=""><div data-mesh-id="comp-jx38cb2pinlineContent-gridContainer" data-testid="mesh-container-content"><div id="comp-jz8b0dne" class="_1KV2M"><div data-mesh-id="comp-jz8b0dneinlineContent" data-testid="inline-content" class=""><div data-mesh-id="comp-jz8b0dneinlineContent-gridContainer" data-testid="mesh-container-content"><div id="comp-jx38mfzd" class="_1Q9if" data-testid="richTextElement"><h2 class="font_2" style="font-size:70px; line-height:1.3em;"><span style="font-size:70px;"><span style="font-family:wfont_fee50a_707675c31fc248b1a37b55e6dea8826f,wf_707675c31fc248b1a37b55e6d,orig_nanumgothic_bold;">
  <span style="letter-spacing:0em;"> </span></span></span></h2>
-
- 
 
 
 
@@ -468,9 +462,3 @@ url("https://static.wixstatic.com/ufonts/fee50a_707675c31fc248b1a37b55e6dea8826f
 </html>
 
 
-</title>
-</head>
-<body>
-
-</body>
-</html>

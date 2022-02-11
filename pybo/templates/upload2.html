@@ -7,18 +7,25 @@
     <title>Title</title>
 </head>
 <body>
-    <table class="table">
-   <p>
+    <p>
          <button type="button" onclick="location.href='/' ">뒤로가기</button>
     </p>
-        <td>
-            {{ df_list }}
-        </td>
+
+   	<div class="container">
+         <h1> 원본데이터 - Head</h1>
+    <table class="table table-light">
+                <!--Displaying the converted table-->
+                     {% for table in tables %}
+                    {{titles[loop.index]}}
+                    <td class="table-active">{{ table|safe }}</td>
+                    {% endfor %}
+
         </table>
-    <a href="{{ url_for('main.to_json') }}" class="btn btn-primary" >다음</a>
+        </div>
+    <a href="{{ url_for('main.to_json') }}" class="btn btn-primary" >완전 재현데이터</a>
+    <a href="{{ url_for('main.to_json_part') }}" class="btn btn-primary">부분 재현데이터</a>
 </body>
 </html>
 
 
 {% endblock %}
-
