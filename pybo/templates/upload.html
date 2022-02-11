@@ -7,21 +7,68 @@
     <title>Title</title>
 </head>
 <style>
-  
-   #input1{
-       width:300px;
-       height:300px;
-   }
+  .filebox{
+      margin-left:19px;
+  }
+  .filebox .upload-name {
 
+    height: 40px;
+    padding: 0 10px;
+    vertical-align: middle;
+    border: 1px solid #dddddd;
+    width: 35%;
+    color: #6c757d;
+}
+.filebox label {
+    display: inline-block;
+    padding: 10px 20px;
+    color: #fff;
+    vertical-align: middle;
+    background-color: #6c757d;
+    cursor: pointer;
+    height: 40px;
+    margin-left: 10px;
+    margin-top:11px;
+    border-radius: 0.25rem;
+}
+    
+
+.filebox input[type="file"] {
+    position: absolute;
+    width: 0;
+    height: 0;
+    padding: 0;
+    overflow: hidden;
+    border: 0;
+}
+#input1{
+    display: inline-block;
+    padding: 7px 20px; 
+    margin-top:3px;
+}
 
 
 </style>
 
+
 <body>
     <form action = "http://localhost:5000/fileUpload" method ="POST" enctype="multipart/form-data">
-        <input id="input1" type="file" name = "file"/>
-        <input class="btn btn-primary" type = "submit"/>
+        <div class="filebox">
+            <input class="upload-name" value="첨부파일" placeholder="첨부파일">
+            <label for="file">파일찾기</label> 
+            <input type="file" id="file" name="file">
+            <input id="input1"class="btn btn-secondary" type = "submit"/>
+        </div>
+        
+        
     </form>
+
+    <script>
+        $("#file").on('change',function(){
+          var fileName = $("#file").val();
+          $(".upload-name").val(fileName);
+        });
+        </script>
 </body>
 </html>
 

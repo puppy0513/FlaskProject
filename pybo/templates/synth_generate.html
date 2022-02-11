@@ -6,26 +6,28 @@
     <meta charset="UTF-8">
     <title>Title</title>
 </head>
+
 <body>
 	<div class="container">
   <!-- Content here -->
-
-    <table class="table table-dark">
+    <h2 style="margin-top: 10px;text-align: center;">원본데이터</h2>
+    <table class="table table-light">
                 <!--Displaying the converted table-->
                      {% for table in tables %}
                     {{titles[loop.index]}}
-                    <td>
+                    <td  class="table-active">
                     {{ table|safe }}
                         </td>
                     {% endfor %}
 
         </table>
 		<hr>
-		<table class="table table-dark">
+        <h2 style="margin-top: 10px;text-align: center;">재현데이터</h2>
+		<table class="table table-light">
                 <!--Displaying the converted table-->
                      {% for table2 in tables2 %}
                     {{titles2[loop.index]}}
-                    <td>
+                    <td  class="table-active">
                     {{ table2|safe }}
                         </td>
                     {% endfor %}

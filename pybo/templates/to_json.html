@@ -7,11 +7,24 @@
     <title>Title</title>
 </head>
 <body>
-	<div class="container">
-       <p>{{df_col}}</p>
-	<h3>위 컬럼들을 변경합니다</h3>
-		</div>
+	<div>
+
+	<table class="container">
+		<tr>
+			<td>
+				<h3>컬럼변경</h3>
+			</td>
+		</tr>
+       <td>{{df_col}}</td>
+	
+	</table>
+</div>
+	
 	<a href="{{ url_for('main.synth_generate') }}" class="btn btn-primary" >다음</a>
+
+
+
+
 
 </body>
 </html>
