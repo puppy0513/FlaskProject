@@ -79,7 +79,7 @@ def upload_file():
         #  ff = pd.DataFrame(data = f)
         f.save("C:/Work/최종프로젝트/flask/FlaskProject/pybo/uploads/" + obj + '.csv')
         # fff = pd.read_csv("C:/finalproject/myproject/pybo/uploads/" + obj + '.csv', encoding='CP949')
-        fff = pd.read_csv("C:/Work/최종프로젝트/flask/FlaskProject/pybo/uploads/" + obj + '.csv')
+        fff = pd.read_csv("C:/Work/최종프로젝트/flask/FlaskProject/pybo/uploads/" + obj + '.csv', encoding='euc-kr')
         # return f.to_html()
         df_info = fff
         df_col = []
@@ -96,7 +96,7 @@ def upload_file():
 @bp.route('/to_json', methods=['GET', 'POST'])
 def to_json():
         obj = g.user.username
-        df_info = pd.read_csv("C:/Work/최종프로젝트/flask/FlaskProject/pybo/uploads/" + obj + ".csv")
+        df_info = pd.read_csv("C:/Work/최종프로젝트/flask/FlaskProject/pybo/uploads/" + obj + ".csv",encoding='euc-kr')
         df_col = []
 
         for i in range(0, len(df_info.columns)):
@@ -124,7 +124,7 @@ def to_json():
 @bp.route('/to_json_part', methods=['GET', 'POST'])
 def to_json_part():
     obj = g.user.username
-    df_info = pd.read_csv("C:/Work/최종프로젝트/flask/FlaskProject/pybo/uploads/" + obj + ".csv")
+    df_info = pd.read_csv("C:/Work/최종프로젝트/flask/FlaskProject/pybo/uploads/" + obj + ".csv",encoding='euc-kr')
     df_col = []
 
     for i in range(0, len(df_info.columns)):
@@ -155,7 +155,7 @@ def to_json_part():
 @bp.route('/to_json_part2', methods=['GET', 'POST'])
 def to_json_part2():
     obj = g.user.username
-    df_info = pd.read_csv("C:/Work/최종프로젝트/flask/FlaskProject/pybo/uploads/" + obj + ".csv")
+    df_info = pd.read_csv("C:/Work/최종프로젝트/flask/FlaskProject/pybo/uploads/" + obj + ".csv",encoding='euc-kr')
     df_col = []
     list1 = []
     for i in range(0, len(df_info.columns)):
@@ -166,7 +166,7 @@ def to_json_part2():
     list2 = list(filter(None.__ne__, list1))
     df_info = df_info.drop(list2, axis=1)
     df_info.to_csv("C:/Work/최종프로젝트/flask/FlaskProject/pybo/uploads/" + obj + '.csv')
-    df_info2 = pd.read_csv("C:/Work/최종프로젝트/flask/FlaskProject/pybo/uploads/" + obj + '.csv')
+    df_info2 = pd.read_csv("C:/Work/최종프로젝트/flask/FlaskProject/pybo/uploads/" + obj + '.csv',encoding='euc-kr')
     df_info2 = df_info2.iloc[:,1:]
     df_info2.to_csv("C:/Work/최종프로젝트/flask/FlaskProject/pybo/uploads/" + obj + '.csv')
     df_col2 = []
@@ -205,7 +205,7 @@ def synth_generate():
             dtypes = json.load(f)
         columns = list(dtypes.keys())
 
-        df = pd.read_csv("C:/Work/최종프로젝트/flask/FlaskProject/pybo/uploads/" + obj + ".csv", header=None, skiprows = 1, names=columns).astype(dtypes)
+        df = pd.read_csv("C:/Work/최종프로젝트/flask/FlaskProject/pybo/uploads/" + obj + ".csv",encoding='euc-kr' ,header=None, skiprows = 1, names=columns).astype(dtypes)
         # 헤더가 있는 경우 -> skip
 
         df.apply(pd.to_numeric, errors='coerce')
@@ -230,7 +230,7 @@ def partsynth_generate():
             dtypes = json.load(f)
         columns = list(dtypes.keys())
 
-        df = pd.read_csv("C:/Work/최종프로젝트/flask/FlaskProject/pybo/uploads/" + obj + ".csv", header=None, skiprows = 1, names=columns).astype(dtypes)
+        df = pd.read_csv("C:/Work/최종프로젝트/flask/FlaskProject/pybo/uploads/" + obj + ".csv",encoding='euc-kr', header=None, skiprows = 1, names=columns).astype(dtypes)
         # 헤더가 있는 경우 -> skip
         df.apply(pd.to_numeric, errors='coerce')
 
@@ -288,9 +288,9 @@ def distribution():
 @bp.route('/regression', methods=['GET', 'POST'])
 def regression():
     obj = g.user.username
-    original_data = pd.read_csv("C:/Work/최종프로젝트/flask/FlaskProject/pybo/uploads/" + obj + ".csv")
+    original_data = pd.read_csv("C:/Work/최종프로젝트/flask/FlaskProject/pybo/uploads/" + obj + ".csv",encoding='euc-kr')
     original_data = original_data.iloc[:, 1:]
-    synth_data = pd.read_csv("C:/Work/최종프로젝트/flask/FlaskProject/pybo/synth_dir/" + obj + ".csv")
+    synth_data = pd.read_csv("C:/Work/최종프로젝트/flask/FlaskProject/pybo/synth_dir/" + obj + ".csv",encoding='euc-kr')
     cate_col = []
     for i in range(0, len(original_data.columns)):
         if original_data.dtypes[i] != 'object':
@@ -350,9 +350,9 @@ def regression():
 def correlation():
     obj = g.user.username
     plt.close()
-    original_data = pd.read_csv("C:/Work/최종프로젝트/flask/FlaskProject/pybo/uploads/" + obj + ".csv")
+    original_data = pd.read_csv("C:/Work/최종프로젝트/flask/FlaskProject/pybo/uploads/" + obj + ".csv",encoding='euc-kr')
     original_data = original_data.iloc[:, 1:]
-    synth_data = pd.read_csv("C:/Work/최종프로젝트/flask/FlaskProject/pybo/synth_dir/" + obj + ".csv")
+    synth_data = pd.read_csv("C:/Work/최종프로젝트/flask/FlaskProject/pybo/synth_dir/" + obj + ".csv",encoding='euc-kr')
     corr_df = original_data.corr()
     corr_df = corr_df.apply(lambda x: round(x, 2))
 
@@ -418,9 +418,9 @@ def hello_pybo2():
 @bp.route('/hello2',  methods=['GET','POST'])
 def hello_pybo2():
     obj = g.user.username
-    original_data = pd.read_csv("C:/finalproject/myproject/pybo/uploads/" + obj + ".csv")
+    original_data = pd.read_csv("C:/finalproject/myproject/pybo/uploads/" + obj + ".csv",encoding='euc-kr')
     original_data = original_data.iloc[:, 1:]
-    synth_data = pd.read_csv("C:/finalproject/myproject/pybo/synth_dir/" + obj + ".csv")
+    synth_data = pd.read_csv("C:/finalproject/myproject/pybo/synth_dir/" + obj + ".csv",encoding='euc-kr')
     cate_col = []
     for i in range(0, len(original_data.columns)):
         if original_data.dtypes[i] != 'object':

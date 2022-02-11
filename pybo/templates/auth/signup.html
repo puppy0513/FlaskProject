@@ -24,7 +24,23 @@
             <input type="text" class="form-control" name="email" id="email"
                    value="{{ form.email.data or '' }}">
         </div>
-        <button type="submit" class="btn btn-primary">생성하기</button>
+        <hr>
+
+
+        <h1 style="margin-top:10px;">이용약관</h1>
+        <p>
+            이용약관 ----------------
+            ~~~~~~~~~~~~~
+        </p>
+    
+          <div class="form-check mb-3">
+        <input type="checkbox" class="form-check-input" id="validationFormCheck1" required>
+        <label class="form-check-label" for="validationFormCheck1">동의합니다</label>
+        <div class="invalid-feedback">동의하지 않으면 계정 생성이 어렵습니다.</div>
+      </div>
+                  <div class="col-12">
+        <button class="btn btn-primary" type="submit">생성하기</button>
+
     </form>
 </div>
 {% endblock %}
