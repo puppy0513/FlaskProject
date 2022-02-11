@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <tbody>
+	{% for i in data_list %}
+	<tr>
+		{{i}}
+	</tr>
+	{% endfor %}
+
+          <a href="{{ url_for('main.render_file') }}" class="btn btn-primary" >돌아가기</a>
+</body>
+</html>
+
+
+
+{% endblock %}

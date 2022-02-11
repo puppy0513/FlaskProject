@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 import time
 from flask import Blueprint, render_template, url_for , request, session, jsonify, g
 from werkzeug.utils import redirect
@@ -25,6 +23,13 @@ from flask import send_from_directory
 from pybo.views.auth_views import login_required
 from operator import is_not
 from functools import partial
+from sklearn.linear_model import  LinearRegression
+import PIL
+from PIL import Image, ImageDraw, ImageFont
+import os
+import pymysql
+from datetime import datetime
+
 
 bp = Blueprint('main', __name__, url_prefix='/')
 app = Flask(__name__)
@@ -61,7 +66,7 @@ def render_file():
 
 
 
-# /home/ubuntu/projects/FlaskProject/pybo/uploads
+# /home/ubuntu/projects/myproject/pybo/uploads
 # 파일 업로드 처리
 @bp.route('/fileUpload', methods = ['GET', 'POST'])
 def upload_file():
@@ -73,7 +78,7 @@ def upload_file():
         obj = g.user.username
         #  ff = pd.DataFrame(data = f)
         f.save("/home/ubuntu/projects/FlaskProject/pybo/uploads/" + obj + '.csv')
-        # fff = pd.read_csv("C:/finalproject/myproject/pybo/uploads/" + obj + '.csv', encoding='CP949')
+        # fff = pd.read_csv("/home/ubuntu/projects/FlaskProject/pybo/uploads/" + obj + '.csv', encoding='CP949')
         fff = pd.read_csv("/home/ubuntu/projects/FlaskProject/pybo/uploads/" + obj + '.csv')
         # return f.to_html()
         df_info = fff
@@ -84,7 +89,7 @@ def upload_file():
 
         df2 = df_info.iloc[:10]
 
-        return render_template('upload2.html', df_list=df2, df_col = df_col, df_info=df_info)
+        return render_template('upload2.html', tables=[df2.to_html()], titles=[''])
 
 
 # json 생성
@@ -195,14 +200,14 @@ def to_json_part2():
 def synth_generate():
         obj = g.user.username
 
-        # df = pd.read_csv("C:/finalproject/myproject/pybo/uploads/" + obj + ".csv")
+        # df = pd.read_csv("/home/ubuntu/projects/FlaskProject/pybo/uploads/" + obj + ".csv")
         with open("/home/ubuntu/projects/FlaskProject/pybo/uploads/" + obj + ".json", 'r') as f:
             dtypes = json.load(f)
         columns = list(dtypes.keys())
 
         df = pd.read_csv("/home/ubuntu/projects/FlaskProject/pybo/uploads/" + obj + ".csv", header=None, skiprows = 1, names=columns).astype(dtypes)
         # 헤더가 있는 경우 -> skip
-        df = df.iloc[:, 1:]
+
         df.apply(pd.to_numeric, errors='coerce')
 
         spop = Synthpop()
@@ -210,8 +215,9 @@ def synth_generate():
 
         synth_df = spop.generate(len(df))
         synth_df2 = synth_df.iloc[:10]
+        df2 = df.iloc[:10]
         synth_df.to_csv("/home/ubuntu/projects/FlaskProject/pybo/synth_dir/" + obj + ".csv", index= False)
-        return render_template('synth_generate.html', df=synth_df2, dtypes=synth_df.dtypes)
+        return render_template('synth_generate.html', tables=[df2.to_html()], titles=[''], tables2=[synth_df2.to_html()], titles2=[''])
         # return render_template('synth_generate.html', df=df, dtypes=dtypes)
 
 # json 생성 및 재현데이터 생성
@@ -219,7 +225,7 @@ def synth_generate():
 def partsynth_generate():
         obj = g.user.username
 
-        # df = pd.read_csv("C:/finalproject/myproject/pybo/uploads/" + obj + ".csv")
+        # df = pd.read_csv("/home/ubuntu/projects/FlaskProject/pybo/uploads/" + obj + ".csv")
         with open("/home/ubuntu/projects/FlaskProject/pybo/uploads/" + obj + ".json", 'r') as f:
             dtypes = json.load(f)
         columns = list(dtypes.keys())
@@ -240,13 +246,15 @@ def partsynth_generate():
             for i in range(0, len(df_col)):
                 list1.append(request.form.get(df_col[i]))
         list2 = list(filter(None.__ne__, list1))
-        df = df.drop(list2, axis=1)
-        synth_df2 = synth_df[list2]
-        result = pd.concat([df, synth_df2], axis=1)
+        df2 = df.drop(list2, axis=1)
 
+
+        synth_df2 = synth_df[list2]
+        result = pd.concat([df2, synth_df2], axis=1)
+        df = df.iloc[:10]
         result2 = result.iloc[:10]
         result.to_csv("/home/ubuntu/projects/FlaskProject/pybo/synth_dir/" + obj + ".csv", index= False)
-        return render_template('partsynth_generate.html', df=result2, dtypes=result2.dtypes)
+        return render_template('partsynth_generate.html', tables=[df.to_html()], titles=[''], tables2=[result2.to_html()], titles2=[''])
 
 
 
@@ -275,6 +283,67 @@ def distribution():
     plt.close()
     return render_template('distribution.html', image_file='/img_dir/'+ obj + 'dis.png')
 
+
+# 회귀분석 -
+@bp.route('/regression', methods=['GET', 'POST'])
+def regression():
+    obj = g.user.username
+    original_data = pd.read_csv("/home/ubuntu/projects/FlaskProject/pybo/uploads/" + obj + ".csv")
+    original_data = original_data.iloc[:, 1:]
+    synth_data = pd.read_csv("/home/ubuntu/projects/FlaskProject/pybo/synth_dir/" + obj + ".csv")
+    cate_col = []
+    for i in range(0, len(original_data.columns)):
+        if original_data.dtypes[i] != 'object':
+            cate_col.append(original_data.columns[i])
+    original_data = original_data[cate_col]
+    # original_data = original_data.iloc[:, 1:]
+    synth_data = synth_data[cate_col]
+    lr = LinearRegression()
+    etc = []
+    for i in range(0,  len(cate_col)):
+        if(i ==0 ):
+            standard = cate_col[i]
+        else:
+            etc.append(cate_col[i])
+
+    Y = original_data[standard].values
+    X = original_data.loc[:, etc].values
+    import statsmodels.api as sm
+    results = sm.OLS(Y, sm.add_constant(X)).fit()
+    # results.summary()
+
+    etc2 = []
+    for i in range(0, len(cate_col)):
+        if (i == 0):
+            standard2 = cate_col[i]
+        else:
+            etc2.append(cate_col[i])
+
+    Y2 = synth_data[standard2].values
+    X2 = synth_data.loc[:, etc2].values
+    results2 = sm.OLS(Y2, sm.add_constant(X2)).fit()
+    list = str(results.summary())
+    list2 = str(results2.summary())
+
+
+    target_image = Image.open('/home/ubuntu/projects/FlaskProject/pybo/static/img_dir/baseimg.png')
+    draw =ImageDraw.Draw(target_image)
+    font = ImageFont.truetype("arial.ttf", 15)
+    draw.text((10,10),list,fill="black",font=font)
+    target_image.save('/home/ubuntu/projects/FlaskProject/pybo/static/img_dir/' + obj + 'originreg.png')
+    target_image.close()
+
+
+    target_image2 = Image.open('/home/ubuntu/projects/FlaskProject/pybo/static/img_dir/baseimg2.png')
+    font2 = ImageFont.truetype("arial.ttf", 15)
+    draw2 = ImageDraw.Draw(target_image2)
+    draw2.text((10, 10), list2, fill="black", font=font2)
+    target_image2.save('/home/ubuntu/projects/FlaskProject/pybo/static/img_dir/' + obj + 'synthreg.png')
+    target_image2.close()
+
+    return render_template('regression.html', origin_file='/img_dir/'+ obj + 'originreg.png', synth_file='/img_dir/'+ obj + 'synthreg.png')
+
+
 # 상관관계 분석 - 수치형만
 @bp.route('/correlation', methods=['GET', 'POST'])
 def correlation():
@@ -298,9 +367,29 @@ def correlation():
 
     return render_template('correlation.html', synth_file='/img_dir/'+ obj + 'synthcorr.png', origin_file='/img_dir/'+ obj + 'origincorr.png')
 
+@bp.route('/syn_store',  methods=['GET','POST'])
+def syn_store():
+    obj = g.user.username
+    db = pymysql.connect(host="localhost", user="root", passwd="1234", db="testpark", charset="utf8")
+    cur = db.cursor()
+
+    csvname = "park"
+    sql = 'insert into park (csvname, id, made_time) values(%s,%s,%s)'
+    cur.execute(sql, (csvname + str(datetime.now()), obj, datetime.now()))
+
+    sql = "SELECT * from park where id = (%s)"
+    cur.execute(sql, (obj))
+    data_list = cur.fetchall()
+
+    db.commit()
+    db.close()
+    return render_template('syn_store.html', data_list=data_list)
+
+
 @bp.route('/hello3')
 def hello_pybo3():
     obj = g.user.username
+
 
     file = "/home/ubuntu/projects/FlaskProject/pybo/uploads/" + obj + ".csv"
     if os.path.isfile(file):
@@ -310,14 +399,58 @@ def hello_pybo3():
     if os.path.isfile(file2):
         os.remove(file2)
 
-    return send_file(path, as_attachment=True)
+    return send_file(path, as_attachment=True, data_list=data_list)
+
+'''
+    db_connection = pymysql.connect(
+        user='root',
+        passwd='1234',
+        host='127.0.0.1',
+        db='testpark',
+        port= '3306',
+        charset='utf8'
+    )
+    cursor = db.cursor(pymysql.cursors.DictCursor)
+    csvname = "park"
+    db = db_connection()
+  #  sql = 'insert into parktest (csvname, id, made_time) values(%s,%s,%s)'
+    cursor.execute(sql, (csvname, obj, datetime.now()))
+    db.commit()
+    db.close()
+'''
+
+
+
+
+
+
+
+
 
 # -------------------------------------- 여기부터는 연습용------------------------------------
 @bp.route('/hello',  methods=['GET','POST'])
 def hello_pybo():
     obj = g.user.username
+    db = pymysql.connect(host="localhost", user="root", passwd="1234", db="testpark", charset="utf8")
+    cur = db.cursor()
+
+
+    sql = "SELECT * from park"
+    cur.execute(sql)
+    data_list = cur.fetchall()
+
+    db.commit()
+    db.close()
+    return render_template('test.html', data_list=data_list)
+
+
+@bp.route('/hello11',  methods=['GET','POST'])
+def hello_pybo11():
+    obj = g.user.username
     return obj
 
+'''
+# POST 형식으로 HTML 데이터 가져오기 -> 정제
 @bp.route('/hello2',  methods=['GET','POST'])
 def hello_pybo2():
     obj = g.user.username
@@ -331,10 +464,19 @@ def hello_pybo2():
             list1.append(request.form.get(df_col[i]))
     list2 = list(filter(None.__ne__, list1))
     return render_template('main.html', list = list2)
-
-
-
-
+'''
+@bp.route('/hello2',  methods=['GET','POST'])
+def hello_pybo2():
+    obj = g.user.username
+    original_data = pd.read_csv("/home/ubuntu/projects/FlaskProject/pybo/uploads/" + obj + ".csv")
+    original_data = original_data.iloc[:, 1:]
+    synth_data = pd.read_csv("/home/ubuntu/projects/FlaskProject/pybo/synth_dir/" + obj + ".csv")
+    cate_col = []
+    for i in range(0, len(original_data.columns)):
+        if original_data.dtypes[i] != 'object':
+            cate_col.append(original_data.columns[i])
+    original_data = original_data[cate_col]
+    return render_template('regression.html', list=original_data)
 
 
 
