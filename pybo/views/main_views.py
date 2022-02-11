@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import time
 from flask import Blueprint, render_template, url_for , request, session, jsonify, g
 from werkzeug.utils import redirect
