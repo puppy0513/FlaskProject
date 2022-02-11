@@ -328,14 +328,14 @@ def regression():
 
     target_image = Image.open('/home/ubuntu/projects/FlaskProject/pybo/static/img_dir/baseimg.png')
     draw =ImageDraw.Draw(target_image)
-    font = ImageFont.truetype("arial.ttf", 15)
+    font = ImageFont.load_default()
     draw.text((10,10),list,fill="black",font=font)
     target_image.save('/home/ubuntu/projects/FlaskProject/pybo/static/img_dir/' + obj + 'originreg.png')
     target_image.close()
 
 
     target_image2 = Image.open('/home/ubuntu/projects/FlaskProject/pybo/static/img_dir/baseimg2.png')
-    font2 = ImageFont.truetype("arial.ttf", 15)
+    font2 = ImageFont.load_default()
     draw2 = ImageDraw.Draw(target_image2)
     draw2.text((10, 10), list2, fill="black", font=font2)
     target_image2.save('/home/ubuntu/projects/FlaskProject/pybo/static/img_dir/' + obj + 'synthreg.png')
