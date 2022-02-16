@@ -7,32 +7,38 @@
     <title>Title</title>
 </head>
 <body>
+	<div class="parent">
+        <div class="child2">
+        </div>
+        <div class="child1 border-line" >
 
-	<div class="container">
-		<p>현재 컬럼들</p>
-       <p>{{df_col}}</p>
-<form action="\to_json_part2" method="post" class="input-form">
-<table>
-	<h4> 삭제할 컬럼</h4>
+			<div class="container">
+				<p>현재 컬럼들</p>
+			   <p>{{df_col}}</p>
+				<form action="\to_json_part2" method="post" class="input-form">
+				<table>
+					<h4> 삭제할 컬럼</h4>
 
-	<tr>
+					<tr>
 
-<div class="btn-group" role="group" aria-label="Basic checkbox toggle button group">
- {% for key, value in count.items() %}
+				<div class="btn-group" role="group" aria-label="Basic checkbox toggle button group">
+				 {% for key, value in count.items() %}
 
-  <input type="checkbox" value = {{value}} name={{value}} class="btn-check" id={{key}} autocomplete="off">
-  <label class="btn btn-outline-primary" for={{key}}>{{value}}</label>
+				  <input type="checkbox" value = {{value}} name={{value}} class="btn-check" id={{key}} autocomplete="off">
+				  <label class="btn btn-outline-primary" for={{key}}>{{value}}</label>
 
-		{% endfor %}
-</div>
-	</tr>
-	<hr>
+						{% endfor %}
+				</div>
+					</tr>
+					<hr>
 
-</table>
+				</table>
 
-	  <input type="submit" value="다음" class="btn btn-primary">
-</form>
-</div>
+					  <input type="submit" value="다음" class="btn btn-primary">
+				</form>
+			</div>
+		</div>
+	</div>
 </body>
 </html>
 
