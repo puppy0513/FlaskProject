@@ -7,16 +7,21 @@
     <title>Title</title>
 </head>
 <body>
-      <h1>Chart</h1>
-{%if True %}
-      <div>
-  <img src="{{  url_for('static', filename = image_file) }}">
+<div class="parent">
+    <div class="child2"></div>
+    <div class="child1 border-line">
+        <h1>Chart</h1>
+        {%if True %}
+        <div>
+            <img src="{{  url_for('static', filename = image_file) }}">
+        </div>
+        {% endif %}
+        <hr>
+        <a href="{{ url_for('main.correlation') }}" class="btn btn-primary">다음</a>
     </div>
-      {% endif %}
-          <hr>
-	<a href="{{ url_for('main.correlation') }}" class="btn btn-primary" >다음</a>
-
-   </body>
+    <div class="child2"></div>
+</div>
+</body>
 </html>
 
 {% endblock %}

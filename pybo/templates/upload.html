@@ -7,18 +7,25 @@
     <title>Title</title>
 </head>
 <body>
-    <div class="parent">
-        <div class="child2">
-        </div>
-        <div class="child1 border-line" >
-            <form action = "http://localhost:5000/fileUpload" method ="POST" enctype="multipart/form-data">
-                <input type="file" name = "file"/>
-                <input type = "submit"/>
+<div class="parent">
+    <div class="child2">
+    </div>
+    <div class="child1 border-line">
+        <div>
+            <form action="http://localhost:5000/fileUpload" method="POST" enctype="multipart/form-data">
+                <div class="form-group files">
+                    <label>파일을 업로드하세요 </label>
+                    <input type="file" class="form-control" name="file" value="File">
+                </div>
+                <div>
+                    <input class="btn" type="submit" value="Submit" style="background-color:#695784; color:white;">
+                </div>
             </form>
         </div>
-        <div class="child2">
-        </div>
     </div>
+    <div class="child2">
+    </div>
+</div>
 </body>
 </html>
 

@@ -7,24 +7,38 @@
     <title>Title</title>
 </head>
 <body>
-    <div class="parent">
-        <div class="child2">
-        </div>
-        <div class="child1 border-line" >
-            <table class="table">
-           <p>
-                 <button type="button" onclick="location.href='/' ">뒤로가기</button>
-            </p>
-                <td>
-                    {{ df_list }}
-                </td>
-                </table>
-            <a href="{{ url_for('main.to_json') }}" class="btn btn-primary" >완전 재현데이터</a>
-            <a href="{{ url_for('main.to_json_part') }}" class="btn btn-primary">부분 재현데이터</a>
-        </div>
-        <div class="child2">
+<div class="parent">
+    <div class="child2"></div>
+    <div class="child1 border-line">
+        <p>
+            <button class="btn btn-secondary" type="button" onclick="location.href='/' ">뒤로가기</button>
+        </p>
+    </div>
+    <div class="child2"></div>
+</div>
+<div class="parent">
+    <div class="child1 border-line">
+
+        <div class="container">
+            <h1> 원본데이터 - Head</h1>
+            <table class="table table-light">
+                <!--Displaying the converted table-->
+                {% for table in tables %}
+                {{titles[loop.index]}}
+                <td class="table-active">{{ table|safe }}</td>
+                {% endfor %}
+            </table>
         </div>
     </div>
+</div>
+<div class="parent">
+    <div class="child2"></div>
+    <div class="child1 border-line">
+        <a href="{{ url_for('main.to_json') }}" class="btn btn-primary">완전 재현데이터</a>
+        <a href="{{ url_for('main.to_json_part') }}" class="btn btn-primary">부분 재현데이터</a>
+    </div>
+    <div class="child2"></div>
+</div>
 </body>
 </html>
 
