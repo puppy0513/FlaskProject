@@ -7,7 +7,6 @@
     <title>Title</title>
 </head>
 <body>
-<<<<<<< HEAD
 
 <div class="container">
     <h1> 원본데이터 - Head</h1>
@@ -28,33 +27,9 @@
 <a href="{{ url_for('main.to_json') }}" class="btn" style="background-color:#695784; color:white;">완전 재현데이터</a>
 <a href="{{ url_for('main.to_json_part') }}" class="btn" style="background-color:#695784; color:white;"s>부분 재현데이터</a>
 </div>
-=======
-<p>
-    <button type="button" onclick="location.href='/' ">뒤로가기</button>
-</p>
-<div class="container">
-    <h1> 원본데이터 - Head</h1>
-    <h2>정제 전 : {{origin_shape}}, 정제 후 : {{refine_shape}}</h2>
-    <table class="table table-dark">
-        <!--Displaying the converted table-->
-        {% for table in tables %}
-        {{titles[loop.index]}}
-        <td>
-            {{ table|safe }}
-        </td>
-        {% endfor %}
-
-    </table>
->>>>>>> 6b61d1c846bd8da6d93c05e2d3f261e0c503ec70
 </div>
-<a href="{{ url_for('main.to_json') }}" class="btn btn-primary">완전 재현데이터</a>
-<a href="{{ url_for('main.to_json_part') }}" class="btn btn-primary">부분 재현데이터</a>
 </body>
 </html>
 
 
-<<<<<<< HEAD
 {% endblock %}  
-=======
-{% endblock %}
->>>>>>> 6b61d1c846bd8da6d93c05e2d3f261e0c503ec70
