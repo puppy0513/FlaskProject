@@ -9,7 +9,7 @@
 <body>
 <div class="container">
     <!-- Content here -->
-    <h1> 재현데이터 - Head</h1>
+    <h1> 원본데이터 - Head</h1>
     <table class="table table-light">
         <!--Displaying the converted table-->
         {% for table in df %}
@@ -17,11 +17,20 @@
         <td class="table-active">{{ table|safe }}</td>
         {% endfor %}
     </table>
+
+    <h1> 재현데이터 - Head</h1>
+    <table class="table table-light">
+        <!--Displaying the converted table-->
+        {% for table in df2%}
+        {{titles2[loop.index]}}
+        <td class="table-active">{{ table|safe }}</td>
+        {% endfor %}
+    </table>
 </div>
 <div class="parent">
     <div class="child2"></div>
-    <div class="child1 border-line">
-        <a href="{{ url_for('main.distribution') }}" class="btn btn-primary">다음</a>
+    <div class="child1 ">
+        <a href="{{ url_for('main.distribution') }}" class="btn btn-secondary">다음</a>
     </div>
     <div class="child2"></div>
 </div>
