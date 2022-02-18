@@ -308,7 +308,7 @@ def hello11():
     bucket = s3.Bucket(bucket_name)
     for j in range(0, len(count2)):
         obj_file = count2[j]+ '.csv'
-        save_file = 'C:/Work/최종프로젝트/ilhan/FlaskProject-park_windo/pybo/synth_dir/'+ count2[j] + '.csv'
+        save_file = '/home/ubuntu/projects/FlaskProject/pybo/synth_dir/'+ count2[j] + '.csv'
         bucket.download_file(obj_file, save_file)
 
     for k in range(0, len(count2)):
