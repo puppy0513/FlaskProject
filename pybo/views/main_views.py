@@ -69,13 +69,21 @@ def allowed_file(filename):
 @login_required
 def render_file():
     obj = g.user.username
+<<<<<<< HEAD
     file = "/home/ubuntu/projects/FlaskProject/pybo/uploads/" + obj + ".csv"
+=======
+    file = "C:/finalproject_2/myproject/pybo/uploads/" + obj + ".csv"
+>>>>>>> 6b61d1c846bd8da6d93c05e2d3f261e0c503ec70
     try:
         os.remove(file)
     except OSError:
         pass
 
+<<<<<<< HEAD
     file2 = "/home/ubuntu/projects/FlaskProject/pybo/uploads/" + obj + ".json"
+=======
+    file2 = "C:/finalproject_2/myproject/pybo/uploads/" + obj + ".json"
+>>>>>>> 6b61d1c846bd8da6d93c05e2d3f261e0c503ec70
     try:
         os.remove(file2)
     except OSError:
@@ -83,7 +91,11 @@ def render_file():
 
     list2 = ['origincorr', 'originreg', 'synthcorr', 'synthreg', 'dis']
     for i in range(0, len(list2)):
+<<<<<<< HEAD
         file3 = "/home/ubuntu/projects/FlaskProject/pybo/static/img_dir/" + obj + list2[i] + ".png"
+=======
+        file3 = "C:/finalproject_2/myproject/pybo/static/img_dir/" + obj + list2[i] + ".png"
+>>>>>>> 6b61d1c846bd8da6d93c05e2d3f261e0c503ec70
         try:
             os.remove(file3)
         except OSError:
@@ -101,14 +113,23 @@ def upload_file():
         obj = g.user.username
         f = request.files['file']
         if f and allowed_file(f.filename):
+<<<<<<< HEAD
             f.save("/home/ubuntu/projects/FlaskProject/pybo/uploads/" + obj + '.csv')
+=======
+            f.save("C:/finalproject_2/myproject/pybo/uploads/" + obj + '.csv')
+>>>>>>> 6b61d1c846bd8da6d93c05e2d3f261e0c503ec70
         else:
             return render_template('extension_error.html')
 
             #  ff = pd.DataFrame(data = f)
         # fff = pd.read_csv("/:\finalproject_2/myproject/pybo/uploads/" + obj + '.csv', encoding='CP949')
+<<<<<<< HEAD
         fff = pd.read_csv("/home/ubuntu/projects/FlaskProject/pybo/uploads/" + obj + '.csv')
         asd = pd.read_csv("/home/ubuntu/projects/FlaskProject/pybo/uploads/" + obj + '.csv')
+=======
+        fff = pd.read_csv("C:/finalproject_2/myproject/pybo/uploads/" + obj + '.csv')
+        asd = pd.read_csv("C:/finalproject_2/myproject/pybo/uploads/" + obj + '.csv')
+>>>>>>> 6b61d1c846bd8da6d93c05e2d3f261e0c503ec70
 
         cate_col = []
         for i in range(0, len(fff.columns)):
@@ -143,7 +164,11 @@ def upload_file():
 
         df_info = fff.iloc[0:10]
 
+<<<<<<< HEAD
         fff.to_csv("/home/ubuntu/projects/FlaskProject/pybo/uploads/" + obj + '.csv', index=False)
+=======
+        fff.to_csv("C:/finalproject_2/myproject/pybo/uploads/" + obj + '.csv', index=False)
+>>>>>>> 6b61d1c846bd8da6d93c05e2d3f261e0c503ec70
 
         return render_template('upload2.html', tables=[df_info.to_html()], titles=[''], refine_shape=fff.shape,
                                origin_shape=asd.shape)
@@ -153,7 +178,11 @@ def upload_file():
 @bp.route('/to_json', methods=['GET', 'POST'])
 def to_json():
         obj = g.user.username
+<<<<<<< HEAD
         df_info = pd.read_csv("/home/ubuntu/projects/FlaskProject/pybo/uploads/" + obj + ".csv")
+=======
+        df_info = pd.read_csv("C:/finalproject_2/myproject/pybo/uploads/" + obj + ".csv")
+>>>>>>> 6b61d1c846bd8da6d93c05e2d3f261e0c503ec70
         df_col = []
 
         for i in range(0, len(df_info.columns)):
@@ -171,7 +200,11 @@ def to_json():
         # 이렇게 dict로 주지 않으면 list형식으로 들어감 ;
         for i in range(1, len(df_info.columns)):
             to_json[df_col[i]] = df_type[i]
+<<<<<<< HEAD
         with open("/home/ubuntu/projects/FlaskProject/pybo/uploads/" + obj + ".json", 'w') as f:
+=======
+        with open("C:/finalproject_2/myproject/pybo/uploads/" + obj + ".json", 'w') as f:
+>>>>>>> 6b61d1c846bd8da6d93c05e2d3f261e0c503ec70
             json.dump(to_json, f)
         
         return render_template('to_json.html', df=df_info, dof_col=df_col)
@@ -181,7 +214,11 @@ def to_json():
 @bp.route('/to_json_part', methods=['GET', 'POST'])
 def to_json_part():
     obj = g.user.username
+<<<<<<< HEAD
     df_info = pd.read_csv("/home/ubuntu/projects/FlaskProject/pybo/uploads/" + obj + ".csv")
+=======
+    df_info = pd.read_csv("C:/finalproject_2/myproject/pybo/uploads/" + obj + ".csv")
+>>>>>>> 6b61d1c846bd8da6d93c05e2d3f261e0c503ec70
     df_col = []
 
     for i in range(0, len(df_info.columns)):
@@ -199,7 +236,11 @@ def to_json_part():
     # 이렇게 dict로 주지 않으면 list형식으로 들어감 ;
     for i in range(1, len(df_info.columns)):
         to_json[df_col[i]] = df_type[i]
+<<<<<<< HEAD
     with open("/home/ubuntu/projects/FlaskProject/pybo/uploads/" + obj + ".json", 'w') as f:
+=======
+    with open("C:/finalproject_2/myproject/pybo/uploads/" + obj + ".json", 'w') as f:
+>>>>>>> 6b61d1c846bd8da6d93c05e2d3f261e0c503ec70
         json.dump(to_json, f)
 
     count = {}
@@ -212,7 +253,11 @@ def to_json_part():
 @bp.route('/to_json_part2', methods=['GET', 'POST'])
 def to_json_part2():
     obj = g.user.username
+<<<<<<< HEAD
     df_info = pd.read_csv("/home/ubuntu/projects/FlaskProject/pybo/uploads/" + obj + ".csv")
+=======
+    df_info = pd.read_csv("C:/finalproject_2/myproject/pybo/uploads/" + obj + ".csv")
+>>>>>>> 6b61d1c846bd8da6d93c05e2d3f261e0c503ec70
     df_col = []
     list1 = []
     for i in range(0, len(df_info.columns)):
@@ -222,10 +267,17 @@ def to_json_part2():
             list1.append(request.form.get(df_col[i]))
     list2 = list(filter(None.__ne__, list1))
     df_info = df_info.drop(list2, axis=1)
+<<<<<<< HEAD
     df_info.to_csv("/home/ubuntu/projects/FlaskProject/pybo/uploads/" + obj + '.csv')
     df_info2 = pd.read_csv("/home/ubuntu/projects/FlaskProject/pybo/uploads/" + obj + '.csv')
     df_info2 = df_info2.iloc[:,1:]
     df_info2.to_csv("/home/ubuntu/projects/FlaskProject/pybo/uploads/" + obj + '.csv')
+=======
+    df_info.to_csv("C:/finalproject_2/myproject/pybo/uploads/" + obj + '.csv')
+    df_info2 = pd.read_csv("C:/finalproject_2/myproject/pybo/uploads/" + obj + '.csv')
+    df_info2 = df_info2.iloc[:,1:]
+    df_info2.to_csv("C:/finalproject_2/myproject/pybo/uploads/" + obj + '.csv')
+>>>>>>> 6b61d1c846bd8da6d93c05e2d3f261e0c503ec70
     df_col2 = []
 
     for i in range(0, len(df_info2.columns)):
@@ -243,7 +295,11 @@ def to_json_part2():
     # 이렇게 dict로 주지 않으면 list형식으로 들어감 ;
     for i in range(1, len(df_info2.columns)):
         to_json[df_col2[i]] = df_type2[i]
+<<<<<<< HEAD
     with open("/home/ubuntu/projects/FlaskProject/pybo/uploads/" + obj + ".json", 'w') as f:
+=======
+    with open("C:/finalproject_2/myproject/pybo/uploads/" + obj + ".json", 'w') as f:
+>>>>>>> 6b61d1c846bd8da6d93c05e2d3f261e0c503ec70
         json.dump(to_json, f)
     count = {}
     for i in range(0, len(df_col2)):
@@ -308,16 +364,28 @@ def hello11():
     bucket = s3.Bucket(bucket_name)
     for j in range(0, len(count2)):
         obj_file = count2[j]+ '.csv'
+<<<<<<< HEAD
         save_file = 'C:/Work/최종프로젝트/ilhan/FlaskProject-park_windo/pybo/synth_dir/'+ count2[j] + '.csv'
         bucket.download_file(obj_file, save_file)
 
     for k in range(0, len(count2)):
         syn = "/home/ubuntu/projects/FlaskProject/pybo/synth_dir/" + str(count2[0]) + ".csv"
+=======
+        save_file = 'C:/finalproject_2/myproject/pybo/synth_dir/'+ count2[j] + '.csv'
+        bucket.download_file(obj_file, save_file)
+
+    for k in range(0, len(count2)):
+        syn = "C:/finalproject_2/myproject/pybo/synth_dir/" + str(count2[0]) + ".csv"
+>>>>>>> 6b61d1c846bd8da6d93c05e2d3f261e0c503ec70
         result = send_file(syn, as_attachment=True)
         return result
 
     for l in range(0, len(count2)):
+<<<<<<< HEAD
         file = "/home/ubuntu/projects/FlaskProject/pybo/uploads/" + count2[l] + ".csv"
+=======
+        file = "C:/finalproject_2/myproject/pybo/uploads/" + count2[l] + ".csv"
+>>>>>>> 6b61d1c846bd8da6d93c05e2d3f261e0c503ec70
         try:
             os.remove(file)
         except OSError:
@@ -350,11 +418,19 @@ def synth_generate():
         obj = g.user.username
 
         # df = pd.read_csv("/:\finalproject_2/myproject/pybo/uploads/" + obj + ".csv")
+<<<<<<< HEAD
         with open("/home/ubuntu/projects/FlaskProject/pybo/uploads/" + obj + ".json", 'r') as f:
             dtypes = json.load(f)
         columns = list(dtypes.keys())
 
         df = pd.read_csv("/home/ubuntu/projects/FlaskProject/pybo/uploads/" + obj + ".csv", header=None, skiprows = 1, names=columns).astype(dtypes)
+=======
+        with open("C:/finalproject_2/myproject/pybo/uploads/" + obj + ".json", 'r') as f:
+            dtypes = json.load(f)
+        columns = list(dtypes.keys())
+
+        df = pd.read_csv("C:/finalproject_2/myproject/pybo/uploads/" + obj + ".csv", header=None, skiprows = 1, names=columns).astype(dtypes)
+>>>>>>> 6b61d1c846bd8da6d93c05e2d3f261e0c503ec70
         # 헤더가 있는 경우 -> skip
 
         df.apply(pd.to_numeric, errors='coerce')
@@ -367,7 +443,11 @@ def synth_generate():
         synth_df = spop.generate(len(df))
         synth_df2 = synth_df.iloc[:10]
         df2 = df.iloc[:10]
+<<<<<<< HEAD
         synth_df.to_csv("/home/ubuntu/projects/FlaskProject/pybo/synth_dir/" + obj + str(index_add_counter) + ".csv", index= False)
+=======
+        synth_df.to_csv("C:/finalproject_2/myproject/pybo/synth_dir/" + obj + str(index_add_counter) + ".csv", index= False)
+>>>>>>> 6b61d1c846bd8da6d93c05e2d3f261e0c503ec70
         return render_template('synth_generate.html', df=[df2.to_html()], titles=[''], df2=[synth_df2.to_html()], titles2=[''])
         # return render_template('synth_generate.html', df=df, dtypes=dtypes)
 
@@ -379,11 +459,19 @@ def partsynth_generate():
         obj = g.user.username
 
         # df = pd.read_csv("/:\finalproject_2/myproject/pybo/uploads/" + obj + ".csv")
+<<<<<<< HEAD
         with open("/home/ubuntu/projects/FlaskProject/pybo/uploads/" + obj + ".json", 'r') as f:
             dtypes = json.load(f)
         columns = list(dtypes.keys())
 
         df = pd.read_csv("/home/ubuntu/projects/FlaskProject/pybo/uploads/" + obj + ".csv", header=None, skiprows = 1, names=columns).astype(dtypes)
+=======
+        with open("C:/finalproject_2/myproject/pybo/uploads/" + obj + ".json", 'r') as f:
+            dtypes = json.load(f)
+        columns = list(dtypes.keys())
+
+        df = pd.read_csv("C:/finalproject_2/myproject/pybo/uploads/" + obj + ".csv", header=None, skiprows = 1, names=columns).astype(dtypes)
+>>>>>>> 6b61d1c846bd8da6d93c05e2d3f261e0c503ec70
         # 헤더가 있는 경우 -> skip
         df.apply(pd.to_numeric, errors='coerce')
 
@@ -407,8 +495,13 @@ def partsynth_generate():
         result = pd.concat([df2, synth_df2], axis=1)
         df = df.iloc[:10]
         result2 = result.iloc[:10]
+<<<<<<< HEAD
         result.to_csv("/home/ubuntu/projects/FlaskProject/pybo/synth_dir/" + obj + str(index_add_counter) + ".csv", index= False)
         return render_template('partsynth_generate.html', df=[df.to_html()], titles=[''], tables2=[result2.to_html()], titles2=[''])
+=======
+        result.to_csv("C:/finalproject_2/myproject/pybo/synth_dir/" + obj + str(index_add_counter) + ".csv", index= False)
+        return render_template('partsynth_generate.html', tables=[df.to_html()], titles=[''], tables2=[result2.to_html()], titles2=[''])
+>>>>>>> 6b61d1c846bd8da6d93c05e2d3f261e0c503ec70
 
 
 
@@ -416,9 +509,15 @@ def partsynth_generate():
 @bp.route('/distribution', methods=['GET', 'POST'])
 def distribution():
     obj = g.user.username
+<<<<<<< HEAD
     original_data = pd.read_csv("/home/ubuntu/projects/FlaskProject/pybo/uploads/" + obj + ".csv")
     original_data = original_data.iloc[:,1:]
     synth_data = pd.read_csv("/home/ubuntu/projects/FlaskProject/pybo/synth_dir/" + obj +str(index_add_counter) +".csv")
+=======
+    original_data = pd.read_csv("C:/finalproject_2/myproject/pybo/uploads/" + obj + ".csv")
+    original_data = original_data.iloc[:,1:]
+    synth_data = pd.read_csv("C:/finalproject_2/myproject/pybo/synth_dir/" + obj + ".csv")
+>>>>>>> 6b61d1c846bd8da6d93c05e2d3f261e0c503ec70
     cate_col = []
     for i in range(0, len(original_data.columns)):
         if original_data.dtypes[i] != 'object':
@@ -432,7 +531,11 @@ def distribution():
         plt.hist(original_data[cate_col[i]], alpha=0.3)
         plt.title(cate_col[i])
         plt.legend(['synth', 'origin'])
+<<<<<<< HEAD
         plt.savefig('/home/ubuntu/projects/FlaskProject/pybo/static/img_dir/' + obj + 'dis.png')
+=======
+        plt.savefig('C:/finalproject_2/myproject/pybo/static/img_dir/' + obj + 'dis.png')
+>>>>>>> 6b61d1c846bd8da6d93c05e2d3f261e0c503ec70
 
     plt.close()
     return render_template('distribution.html', image_file='/img_dir/'+ obj + 'dis.png')
@@ -442,9 +545,15 @@ def distribution():
 @bp.route('/regression', methods=['GET', 'POST'])
 def regression():
     obj = g.user.username
+<<<<<<< HEAD
     original_data = pd.read_csv("/home/ubuntu/projects/FlaskProject/pybo/uploads/" + obj + ".csv")
     original_data = original_data.iloc[:, 1:]
     synth_data = pd.read_csv("/home/ubuntu/projects/FlaskProject/pybo/synth_dir/" + obj +str(index_add_counter) + ".csv")
+=======
+    original_data = pd.read_csv("C:/finalproject_2/myproject/pybo/uploads/" + obj + ".csv")
+    original_data = original_data.iloc[:, 1:]
+    synth_data = pd.read_csv("C:/finalproject_2/myproject/pybo/synth_dir/" + obj + ".csv")
+>>>>>>> 6b61d1c846bd8da6d93c05e2d3f261e0c503ec70
     cate_col = []
     for i in range(0, len(original_data.columns)):
         if original_data.dtypes[i] != 'object':
@@ -480,6 +589,7 @@ def regression():
     list2 = str(results2.summary())
 
 
+<<<<<<< HEAD
     target_image = Image.open('/home/ubuntu/projects/FlaskProject/pybo/static/img_dir/baseimg.png')
     draw =ImageDraw.Draw(target_image)
     font = ImageFont.truetype("arial.ttf", 15)
@@ -493,6 +603,21 @@ def regression():
     draw2 = ImageDraw.Draw(target_image2)
     draw2.text((0, 0), list2, fill="black", font=font2)
     target_image2.save('/home/ubuntu/projects/FlaskProject/pybo/static/img_dir/' + obj + 'synthreg.png')
+=======
+    target_image = Image.open('C:/finalproject_2/myproject/pybo/static/img_dir/baseimg.png')
+    draw =ImageDraw.Draw(target_image)
+    font = ImageFont.truetype("arial.ttf", 15)
+    draw.text((0,0),list,fill="black",font=font)
+    target_image.save('C:/finalproject_2/myproject/pybo/static/img_dir/' + obj + 'originreg.png')
+    target_image.close()
+
+
+    target_image2 = Image.open('C:/finalproject_2/myproject/pybo/static/img_dir/baseimg2.png')
+    font2 = ImageFont.truetype("arial.ttf", 15)
+    draw2 = ImageDraw.Draw(target_image2)
+    draw2.text((0, 0), list2, fill="black", font=font2)
+    target_image2.save('C:/finalproject_2/myproject/pybo/static/img_dir/' + obj + 'synthreg.png')
+>>>>>>> 6b61d1c846bd8da6d93c05e2d3f261e0c503ec70
     target_image2.close()
 
 
@@ -504,20 +629,34 @@ def regression():
 def correlation():
     obj = g.user.username
     plt.close()
+<<<<<<< HEAD
     original_data = pd.read_csv("/home/ubuntu/projects/FlaskProject/pybo/uploads/" + obj + ".csv")
     original_data = original_data.iloc[:, 1:]
     synth_data = pd.read_csv("/home/ubuntu/projects/FlaskProject/pybo/synth_dir/" + obj +str(index_add_counter) + ".csv")
+=======
+    original_data = pd.read_csv("C:/finalproject_2/myproject/pybo/uploads/" + obj + ".csv")
+    original_data = original_data.iloc[:, 1:]
+    synth_data = pd.read_csv("C:/finalproject_2/myproject/pybo/synth_dir/" + obj + ".csv")
+>>>>>>> 6b61d1c846bd8da6d93c05e2d3f261e0c503ec70
     corr_df = original_data.corr()
     corr_df = corr_df.apply(lambda x: round(x, 2))
 
     ax = sns.heatmap(corr_df, annot=True, annot_kws=dict(color='g'), cmap='Greys')
+<<<<<<< HEAD
     plt.savefig('/home/ubuntu/projects/FlaskProject/pybo/static/img_dir/' + obj + 'origincorr.png')
+=======
+    plt.savefig('C:/finalproject_2/myproject/pybo/static/img_dir/' + obj + 'origincorr.png')
+>>>>>>> 6b61d1c846bd8da6d93c05e2d3f261e0c503ec70
     plt.close()
     corr_df2 = synth_data.corr()
     corr_df2 = corr_df2.apply(lambda x: round(x, 2))
 
     ax2 = sns.heatmap(corr_df2, annot=True, annot_kws=dict(color='g'), cmap='Greys')
+<<<<<<< HEAD
     plt.savefig('/home/ubuntu/projects/FlaskProject/pybo/static/img_dir/' + obj + 'synthcorr.png')
+=======
+    plt.savefig('C:/finalproject_2/myproject/pybo/static/img_dir/' + obj + 'synthcorr.png')
+>>>>>>> 6b61d1c846bd8da6d93c05e2d3f261e0c503ec70
     plt.close()
 
     return render_template('correlation.html', synth_file='/img_dir/'+ obj + 'synthcorr.png', origin_file='/img_dir/'+ obj + 'origincorr.png')
@@ -544,7 +683,11 @@ def syn_store():
     bucket_name = 'synthdir'
     bucket = s3.Bucket(bucket_name)
 
+<<<<<<< HEAD
     local_file = "/home/ubuntu/projects/FlaskProject/pybo/synth_dir/" + obj + str(index_add_counter) + ".csv"
+=======
+    local_file = "C:/finalproject_2/myproject/pybo/synth_dir/" + obj + str(index_add_counter) + ".csv"
+>>>>>>> 6b61d1c846bd8da6d93c05e2d3f261e0c503ec70
     obj_file = obj + str(index_add_counter) + '.csv'
     bucket.upload_file(local_file, obj_file)
 
@@ -556,21 +699,35 @@ def syn_store():
 def hello_pybo3():
     obj = g.user.username
 
+<<<<<<< HEAD
     file = "/home/ubuntu/projects/FlaskProject/pybo/uploads/" + obj + ".csv"
+=======
+    file = "C:/finalproject_2/myproject/pybo/uploads/" + obj + ".csv"
+>>>>>>> 6b61d1c846bd8da6d93c05e2d3f261e0c503ec70
     try:
         os.remove(file)
     except OSError:
         pass
 
+<<<<<<< HEAD
     syn = "/home/ubuntu/projects/FlaskProject/pybo/synth_dir/" + obj + str(index_add_counter) + ".csv"
 
     file2 = "/home/ubuntu/projects/FlaskProject/pybo/uploads/" + obj + ".json"
+=======
+    syn = "C:/finalproject_2/myproject/pybo/synth_dir/" + obj + str(index_add_counter) + ".csv"
+
+    file2 = "C:/finalproject_2/myproject/pybo/uploads/" + obj + ".json"
+>>>>>>> 6b61d1c846bd8da6d93c05e2d3f261e0c503ec70
     try:
         os.remove(file2)
     except OSError:
         pass
 
+<<<<<<< HEAD
     file3 = "/home/ubuntu/projects/FlaskProject/pybo/uploads/" + obj + "%.png"
+=======
+    file3 = "C:/finalproject_2/myproject/pybo/uploads/" + obj + "%.png"
+>>>>>>> 6b61d1c846bd8da6d93c05e2d3f261e0c503ec70
     try:
         os.remove(file3)
     except OSError:
@@ -584,5 +741,45 @@ def hello_pybo3():
 
 
 
+<<<<<<< HEAD
+=======
+# -------------------------------------- 여기부터는 연습용------------------------------------
+@bp.route('/hello',  methods=['GET','POST'])
+def hello_pybo():
+    obj = g.user.username
+    return obj
+
+'''
+# POST 형식으로 HTML 데이터 가져오기 -> 정제
+@bp.route('/hello2',  methods=['GET','POST'])
+def hello_pybo2():
+    obj = g.user.username
+    df_info = pd.read_csv("C:/finalproject_2/myproject/pybo/uploads/" + obj + ".csv")
+    df_col = []
+    list1 = []
+    for i in range(0, len(df_info.columns)):
+        df_col.append(df_info.columns[i])
+    if request.method == 'POST':
+        for i in range(0, len(df_col)):
+            list1.append(request.form.get(df_col[i]))
+    list2 = list(filter(None.__ne__, list1))
+    return render_template('main.html', list = list2)
+'''
+@bp.route('/hello2',  methods=['GET','POST'])
+def hello_pybo2():
+    obj = g.user.username
+    original_data = pd.read_csv("C:/finalproject_2/myproject/pybo/uploads/" + obj + ".csv")
+    original_data = original_data.iloc[:, 1:]
+    synth_data = pd.read_csv("C:/finalproject_2/myproject/pybo/synth_dir/" + obj + ".csv")
+    cate_col = []
+    for i in range(0, len(original_data.columns)):
+        if original_data.dtypes[i] != 'object':
+            cate_col.append(original_data.columns[i])
+    original_data = original_data[cate_col]
+    return render_template('regression.html', list=original_data)
+
+
+
+>>>>>>> 6b61d1c846bd8da6d93c05e2d3f261e0c503ec70
 
 
