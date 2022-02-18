@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+       <h1>Regression</h1>
+<div>
+  <img src="{{  url_for('static', filename = origin_file) }}">
+      </div>
+
+       <br>
+       <br>
+       <br>
+      <div>
+  <img src="{{  url_for('static', filename = synth_file) }}">
+      </div>
+
+
+
+          <hr>
+
+
+        <a href="{{ url_for('main.hello_pybo3') }}" class="btn" style="background-color:#695784; color:white;" >Download</a>
+      <a href="{{ url_for('main.render_file') }}" class="btn" style="background-color:#695784; color:white;" >돌아가기</a>
+   </body>
+</html>
+
+{% endblock %}

@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div class="parent">
+    <div class="child2"></div>
+    <div class="child1 border-line">
+        <h1>correlation</h1>
+        <hr>
+
+        <div>
+            <h2>origin</h2>
+            <img src="{{  url_for('static', filename = origin_file) }}">
+        </div>
+        <hr>
+        <div>
+            <h2>synth</h2>
+            <img src="{{  url_for('static', filename = synth_file) }}">
+        </div>
+
+        <hr>
+
+        <a href="{{ url_for('main.regression') }}" class="btn" style="background-color:#695784; color:white;">회귀분석(베타) 하러가기</a>
+        <a href="{{ url_for('main.render_file') }}" class="btn" style="background-color:#695784; color:white;">돌아가기</a>
+    </div>
+    <div class="child2"></div>
+</div>
+</body>
+</html>
+
+{% endblock %}
