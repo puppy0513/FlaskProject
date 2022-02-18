@@ -1,0 +1,19 @@
+{
+	"folders": [
+		{
+			"path": "..\\..\\.github"
+		},
+		{
+			"path": "..\\..\\.idea"
+		},
+		{
+			"path": "..\\..\\__pycache__"
+		},
+		{
+			"path": "..\\..\\migrations"
+		},
+		{
+			"path": ".."
+		}
+	]
+}

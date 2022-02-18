@@ -7,25 +7,29 @@
     <title>Title</title>
 </head>
 <body>
-    <p>
-         <button class="btn btn-secondary" type="button" onclick="location.href='/' ">뒤로가기</button>
-    </p>
 
-   	<div class="container">
-         <h1> 원본데이터 - Head</h1>
-    <table class="table table-light">
-                <!--Displaying the converted table-->
-                     {% for table in tables %}
-                    {{titles[loop.index]}}
-                    <td class="table-active">{{ table|safe }}</td>
-                    {% endfor %}
+<div class="container">
+    <h1> 원본데이터 - Head</h1>
+    <h2>정제 전 : {{origin_shape}}, 정제 후 : {{refine_shape}}</h2>
+    <table class="table table-active">
+        <!--Displaying the converted table-->
+        {% for table in tables %}
+        {{titles[loop.index]}}
+        <td>
+            {{ table|safe }}
+        </td>
+        {% endfor %}
 
-        </table>
-        </div>
-    <a href="{{ url_for('main.to_json') }}" class="btn btn-primary" >완전 재현데이터</a>
-    <a href="{{ url_for('main.to_json_part') }}" class="btn btn-primary">부분 재현데이터</a>
+    </table>
+    <div class="parent">
+    <div class="child1 ">
+<button class="btn btn-secondary" type="button" onclick="location.href='/' ">뒤로가기</button>
+<a href="{{ url_for('main.to_json') }}" class="btn" style="background-color:#695784; color:white;">완전 재현데이터</a>
+<a href="{{ url_for('main.to_json_part') }}" class="btn" style="background-color:#695784; color:white;"s>부분 재현데이터</a>
+</div>
+</div>
 </body>
 </html>
 
 
-{% endblock %}
+{% endblock %}  

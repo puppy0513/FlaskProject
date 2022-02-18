@@ -7,21 +7,60 @@
     <title>사용 메뉴얼</title>
 </head>
 <body>
-    <video class='vid' autoplay loop muted>
+
+    <!-- <video autoplay loop muted>
     <source src="{{url_for('static', filename='exam_video.mp4') }}" type="video/mp4">
-    </video>
-    <div class="container">
-<style>
-    .vid{
-        margin-left:284px;
-    
-    }
- 
-
-</style>
-
-    <hr>
-	<a href="{{ url_for('main.render_file') }}" class="btn btn-primary" >재현데이터 생성하러 가기</a>
+    </video> -->
+    <div class="parent">
+        <div class="child2">
+        </div>
+        <div class="child1 border-line" >
+            <div class="card" style="width:100%;">
+              <img class="card-img-top" src="static/img/manual.png" alt="재현데이터 생성 흐름도">
+              <div class="card-body">
+                <p class="card-text" style="font-size:20px; font-weight: bold;">재현데이터가 어떻게 생성되는지 전체적인 사용자 흐름에 대해서 설명드릴게요.</p>
+              </div>
+            </div>
+            <div class="container"  style="padding-top: 20px">
+                <p style="font-size:20px; font-weight: bold;" >1. 파일을 업로드합니다.</p>
+                <img class="card-img-top" src="static/img/manual_1.png" alt="재현데이터 생성 흐름도">
+            </div>
+            <div class="container"  style="padding-top: 20px">
+                <p style="font-size:20px; font-weight: bold;" >2.생성할 재현데이터의 유형을 선택합니다.</p>
+                <img class="card-img-top" src="static/img/manual_2.png" alt="재현데이터 생성 흐름도">
+            </div>
+            <div class="container"  style="padding-top: 20px">
+                <p style="font-size:20px; font-weight: bold;" >3-1. 부분 재현데이터 생성 클릭시 삭제할 컬럼과 변경할 컬럼을 고르게 됩니다.</p>
+                <img class="card-img-top" src="static/img/manual_3.png" alt="재현데이터 생성 흐름도">
+            </div>
+            <div class="container"  style="padding-top: 20px">
+                <p style="font-size:20px; font-weight: bold;" >3-2. 완전 재현데이터 생성 클릭시 예시 데이터 10개를 출력합니다.</p>
+                <img class="card-img-top" src="static/img/manual_4.png" alt="재현데이터 생성 흐름도">
+            </div>
+            <div class="container"  style="padding-top: 20px">
+                <p style="font-size:20px; font-weight: bold;" >4. 재현데이터가 생성되고, 원본데이터와 재현데이터의 분포 차이를 그래프로 나타내어 준다.</p>
+                <img class="card-img-top" src="static/img/manual_5.png" alt="재현데이터 생성 흐름도">
+            </div>
+            <div class="container"  style="padding-top: 20px">
+                <p style="font-size:20px; font-weight: bold;" >5. 재현데이터가 생성되고, 원본데이터와 재현데이터의 상관관계 그래프를 출력해준다.</p>
+                <img class="card-img-top" src="static/img/manual_6.png" alt="재현데이터 생성 흐름도">
+            </div>
+            <div class="container"  style="padding-top: 20px">
+                <p style="font-size:20px; font-weight: bold;" >6. 재현데이터가 다운로드됩니다. 이후, 원본 데이터는 클라우드 상에서 삭제됩니다. </p>
+                <img class="card-img-top" src="static/img/manual_7.png" alt="재현데이터 생성 흐름도">
+            </div>
+            <div class="card">
+            <h5 class="card-header" style="font-weight: bold;">새로운 재현데이터 경험!!</h5>
+              <div class="card-body">
+                <h5 class="card-title" style="font-weight: bold;">Create synthetic data! </h5>
+                <p class="card-text" style="font-weight: bold;">저희와 함께 새로운 재현데이터 경험을 해보세요!</p>
+                <a href="{{ url_for('main.render_file') }}" class="btn" style="background-color: #573D7C; color:white;" >재현데이터 생성하러 가기</a>
+              </div>
+            </div>
+        </div>
+        <div class="child2">
+        </div>
+    </div>
 </body>
 </html>
 

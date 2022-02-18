@@ -1,22 +1,30 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="container my-3">
-    <form method="post" class="post-form">
-        {{ form.csrf_token }}
-        {% include "form_errors.html" %}
-        <div class="form-group">
-            <label for="username">사용자 이름</label>
-            <input type="text" class="form-control" name="username" id="username"
-                   value="{{ form.username.data or '' }}">
+<div class="parent">
+    <div class="child2">
+    </div>
+    <div class="child1 border-line">
+        <div class="container my-3">
+            <form method="post" class="post-form">
+                {{ form.csrf_token }}
+                {% include "form_errors.html" %}
+                <div class="form-group">
+                    <label for="username">사용자 이름</label>
+                    <input type="text" class="form-control" name="username" id="username"
+                           value="{{ form.username.data or '' }}" style="width:300px;" >
+                </div>
+                <div class="form-group">
+                    <label for="password">비밀번호</label>
+                    <input type="password" class="form-control" name="password" id="password"
+                           value="{{ form.password.data or '' }}" style="width:300px;">
+                </div>
+                <button type="submit" class="btn " style="background-color: #573D7C; color:white;">로그인</button>
+            </form>
+            <br>
+                <a href="{{ url_for('auth.signup') }}" class="btn " style="background-color: #573D7C; color:white;">계정 생성</a>
         </div>
-        <div class="form-group">
-            <label for="password">비밀번호</label>
-            <input type="password" class="form-control" name="password" id="password"
-                   value="{{ form.password.data or '' }}">
-        </div>
-        <button type="submit" class="btn btn-primary">로그인</button>
-    </form>
-    <br>
-    <a href="{{ url_for('auth.signup') }}" class="btn btn-primary" >계정 생성</a>
+    </div>
+    <div class="child2">
+    </div>
 </div>
 {% endblock %}
