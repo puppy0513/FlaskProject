@@ -1,1 +1,1 @@
-{"name": "category", "age": "int", "trade_term": "int", "recept_balance": "int"}
+{"name": "category", "birth": "category", "age": "int", "gender": "category", "address": "category", "trade_term": "int", "recept_balance": "int"}

@@ -31,6 +31,7 @@ import pymysql
 import datetime
 import boto3
 
+
 bp = Blueprint('main', __name__, url_prefix='/')
 app = Flask(__name__)
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
@@ -39,13 +40,11 @@ ALLOWED_EXTENSIONS = set(['txt', 'csv'])
 app.config.update(
     PERMANENT_SESSION_LIFETIME=600
 )
-
 from pybo.models import Question
 # from datasets.adult import df, dtypes
 # from pybo.synthpop.datasets.adult import df, dtypes
 
 global obj
-
 
 @bp.route('/manual')
 def manual():
@@ -55,8 +54,6 @@ def manual():
 @bp.route('/index')
 def index():
     return redirect(url_for('question._list'))
-
-
 
 
 @bp.route('/')
@@ -92,13 +89,9 @@ def render_file():
 
 
 
-def allowed_file(filename):
-    return '.' in filename and \
-           filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
-
 # /home/ubuntu/projects/myproject/pybo/uploads
 # 파일 업로드 처리
-@bp.route('/fileUpload', methods = ['GET', 'POST'])
+@bp.route('/fileUpload', methods=['GET', 'POST'])
 def upload_file():
     if request.method == 'POST':
         obj = g.user.username
@@ -107,7 +100,6 @@ def upload_file():
             f.save("C:/finalproject/myproject/pybo/uploads/" + obj + '.csv')
         else:
             return render_template('extension_error.html')
-
 
             #  ff = pd.DataFrame(data = f)
         # fff = pd.read_csv("C:/finalproject/myproject/pybo/uploads/" + obj + '.csv', encoding='CP949')
@@ -146,17 +138,18 @@ def upload_file():
             fff.drop(i, axis=0, inplace=True)
 
         df_info = fff.iloc[0:10]
-        
+
         fff.to_csv("C:/finalproject/myproject/pybo/uploads/" + obj + '.csv', index=False)
 
-        return render_template('upload2.html', tables=[df_info.to_html()], titles=[''], refine_shape = fff.shape, origin_shape = asd.shape)
+        return render_template('upload2.html', tables=[df_info.to_html()], titles=[''], refine_shape=fff.shape,
+                               origin_shape=asd.shape)
 
 
 # json 생성
 @bp.route('/to_json', methods=['GET', 'POST'])
 def to_json():
         obj = g.user.username
-        df_info = pd.read_csv("C:/finalproject/myproject/pybo/uploads/" + obj + ".csv")
+        df_info = pd.read_csv("pybo/uploads/" + obj + ".csv")
         df_col = []
 
         for i in range(0, len(df_info.columns)):
@@ -174,17 +167,17 @@ def to_json():
         # 이렇게 dict로 주지 않으면 list형식으로 들어감 ;
         for i in range(1, len(df_info.columns)):
             to_json[df_col[i]] = df_type[i]
-        with open("C:/finalproject/myproject/pybo/uploads/" + obj + ".json", 'w') as f:
+        with open("pybo/uploads/" + obj + ".json", 'w') as f:
             json.dump(to_json, f)
         
-        return render_template('to_json.html', df=df_info, df_col=df_col)
+        return render_template('to_json.html', df=df_info, dof_col=df_col)
 
 
 # json 생성
 @bp.route('/to_json_part', methods=['GET', 'POST'])
 def to_json_part():
     obj = g.user.username
-    df_info = pd.read_csv("C:/finalproject/myproject/pybo/uploads/" + obj + ".csv")
+    df_info = pd.read_csv("pybo/uploads/" + obj + ".csv")
     df_col = []
 
     for i in range(0, len(df_info.columns)):
@@ -202,7 +195,7 @@ def to_json_part():
     # 이렇게 dict로 주지 않으면 list형식으로 들어감 ;
     for i in range(1, len(df_info.columns)):
         to_json[df_col[i]] = df_type[i]
-    with open("C:/finalproject/myproject/pybo/uploads/" + obj + ".json", 'w') as f:
+    with open("pybo/uploads/" + obj + ".json", 'w') as f:
         json.dump(to_json, f)
 
     count = {}
@@ -211,14 +204,11 @@ def to_json_part():
 
     return render_template('to_json_part.html', df_col=df_col, count = count)
 
-
-
-
 # json 생성2
 @bp.route('/to_json_part2', methods=['GET', 'POST'])
 def to_json_part2():
     obj = g.user.username
-    df_info = pd.read_csv("C:/finalproject/myproject/pybo/uploads/" + obj + ".csv")
+    df_info = pd.read_csv("pybo/uploads/" + obj + ".csv")
     df_col = []
     list1 = []
     for i in range(0, len(df_info.columns)):
@@ -228,10 +218,10 @@ def to_json_part2():
             list1.append(request.form.get(df_col[i]))
     list2 = list(filter(None.__ne__, list1))
     df_info = df_info.drop(list2, axis=1)
-    df_info.to_csv("C:/finalproject/myproject/pybo/uploads/" + obj + '.csv')
-    df_info2 = pd.read_csv("C:/finalproject/myproject/pybo/uploads/" + obj + '.csv')
+    df_info.to_csv("pybo/uploads/" + obj + '.csv')
+    df_info2 = pd.read_csv("pybo/uploads/" + obj + '.csv')
     df_info2 = df_info2.iloc[:,1:]
-    df_info2.to_csv("C:/finalproject/myproject/pybo/uploads/" + obj + '.csv')
+    df_info2.to_csv("pybo/uploads/" + obj + '.csv')
     df_col2 = []
 
     for i in range(0, len(df_info2.columns)):
@@ -249,13 +239,14 @@ def to_json_part2():
     # 이렇게 dict로 주지 않으면 list형식으로 들어감 ;
     for i in range(1, len(df_info2.columns)):
         to_json[df_col2[i]] = df_type2[i]
-    with open("C:/finalproject/myproject/pybo/uploads/" + obj + ".json", 'w') as f:
+    with open("pybo/uploads/" + obj + ".json", 'w') as f:
         json.dump(to_json, f)
-
+    count = {}
     for i in range(0, len(df_col2)):
         count[i] = df_col2[i]
 
     return render_template('to_json_part2.html', df_col=df_col2, count = count)
+
 
 @bp.route('/syn_store2', methods=['GET', 'POST'])
 @login_required
@@ -274,10 +265,10 @@ def syn_store2():
     count = {}
     for i in range(0, len(data_list)):
         count[i] = data_list[i][0]
-   # list2 = list(filter(None.__ne__, list1))
-    #df_info = df_info.drop(list2, axis=1)
-    
-    return render_template('syn_store2.html', count = count)
+    # list2 = list(filter(None.__ne__, list1))
+    # df_info = df_info.drop(list2, axis=1)
+
+    return render_template('syn_store2.html', count=count)
 
 
 @bp.route('/hello11', methods=['GET', 'POST'])
@@ -330,13 +321,7 @@ def hello11():
 
     return render_template('test.html')
 
-    # return str(list1)
-
 index_add_counter = []
-
-def syn_down(filename):
-    syn = "C:/finalproject/myproject/pybo/synth_dir/" + filename + ".csv"
-    return send_file(syn, as_attachment=True)
 
 
 def add_divide() :
@@ -352,7 +337,6 @@ def add_divide() :
     index_add_counter.append(today.hour)
     index_add_counter.append(today.minute)
     index_add_counter.append(today.microsecond)
-
 
 
 
@@ -382,7 +366,6 @@ def synth_generate():
         synth_df.to_csv("C:/finalproject/myproject/pybo/synth_dir/" + obj + str(index_add_counter) + ".csv", index= False)
         return render_template('synth_generate.html', tables=[df2.to_html()], titles=[''], tables2=[synth_df2.to_html()], titles2=[''])
         # return render_template('synth_generate.html', df=df, dtypes=dtypes)
-
 
 
 
@@ -429,9 +412,9 @@ def partsynth_generate():
 @bp.route('/distribution', methods=['GET', 'POST'])
 def distribution():
     obj = g.user.username
-    original_data = pd.read_csv("C:/finalproject/myproject/pybo/uploads/" + obj + ".csv")
+    original_data = pd.read_csv("pybo/uploads/" + obj + ".csv")
     original_data = original_data.iloc[:,1:]
-    synth_data = pd.read_csv("C:/finalproject/myproject/pybo/synth_dir/" + obj + str(index_add_counter) + ".csv")
+    synth_data = pd.read_csv("pybo/synth_dir/" + obj + ".csv")
     cate_col = []
     for i in range(0, len(original_data.columns)):
         if original_data.dtypes[i] != 'object':
@@ -445,7 +428,7 @@ def distribution():
         plt.hist(original_data[cate_col[i]], alpha=0.3)
         plt.title(cate_col[i])
         plt.legend(['synth', 'origin'])
-        plt.savefig('C:/finalproject/myproject/pybo/static/img_dir/' + obj + 'dis.png')
+        plt.savefig('pybo/static/img_dir/' + obj + 'dis.png')
 
     plt.close()
     return render_template('distribution.html', image_file='/img_dir/'+ obj + 'dis.png')
@@ -455,9 +438,9 @@ def distribution():
 @bp.route('/regression', methods=['GET', 'POST'])
 def regression():
     obj = g.user.username
-    original_data = pd.read_csv("C:/finalproject/myproject/pybo/uploads/" + obj + ".csv")
+    original_data = pd.read_csv("pybo/uploads/" + obj + ".csv")
     original_data = original_data.iloc[:, 1:]
-    synth_data = pd.read_csv("C:/finalproject/myproject/pybo/synth_dir/" + obj + str(index_add_counter) + ".csv")
+    synth_data = pd.read_csv("pybo/synth_dir/" + obj + ".csv")
     cate_col = []
     for i in range(0, len(original_data.columns)):
         if original_data.dtypes[i] != 'object':
@@ -493,20 +476,21 @@ def regression():
     list2 = str(results2.summary())
 
 
-    target_image = Image.open('C:/finalproject/myproject/pybo/static/img_dir/baseimg.png')
+    target_image = Image.open('pybo/static/img_dir/baseimg.png')
     draw =ImageDraw.Draw(target_image)
     font = ImageFont.truetype("arial.ttf", 15)
-    draw.text((10,10),list,fill="black",font=font)
-    target_image.save('C:/finalproject/myproject/pybo/static/img_dir/' + obj + 'originreg.png')
+    draw.text((0,0),list,fill="black",font=font)
+    target_image.save('pybo/static/img_dir/' + obj + 'originreg.png')
     target_image.close()
 
 
-    target_image2 = Image.open('C:/finalproject/myproject/pybo/static/img_dir/baseimg2.png')
+    target_image2 = Image.open('pybo/static/img_dir/baseimg2.png')
     font2 = ImageFont.truetype("arial.ttf", 15)
     draw2 = ImageDraw.Draw(target_image2)
-    draw2.text((10, 10), list2, fill="black", font=font2)
-    target_image2.save('C:/finalproject/myproject/pybo/static/img_dir/' + obj + 'synthreg.png')
+    draw2.text((0, 0), list2, fill="black", font=font2)
+    target_image2.save('pybo/static/img_dir/' + obj + 'synthreg.png')
     target_image2.close()
+
 
     return render_template('regression.html', origin_file='/img_dir/'+ obj + 'originreg.png', synth_file='/img_dir/'+ obj + 'synthreg.png')
 
@@ -516,28 +500,30 @@ def regression():
 def correlation():
     obj = g.user.username
     plt.close()
-    original_data = pd.read_csv("C:/finalproject/myproject/pybo/uploads/" + obj + ".csv")
+    original_data = pd.read_csv("pybo/uploads/" + obj + ".csv")
     original_data = original_data.iloc[:, 1:]
-    synth_data = pd.read_csv("C:/finalproject/myproject/pybo/synth_dir/" + obj + str(index_add_counter) + ".csv")
+    synth_data = pd.read_csv("pybo/synth_dir/" + obj + ".csv")
     corr_df = original_data.corr()
     corr_df = corr_df.apply(lambda x: round(x, 2))
 
     ax = sns.heatmap(corr_df, annot=True, annot_kws=dict(color='g'), cmap='Greys')
-    plt.savefig('C:/finalproject/myproject/pybo/static/img_dir/' + obj + 'origincorr.png')
+    plt.savefig('pybo/static/img_dir/' + obj + 'origincorr.png')
     plt.close()
     corr_df2 = synth_data.corr()
     corr_df2 = corr_df2.apply(lambda x: round(x, 2))
 
     ax2 = sns.heatmap(corr_df2, annot=True, annot_kws=dict(color='g'), cmap='Greys')
-    plt.savefig('C:/finalproject/myproject/pybo/static/img_dir/' + obj + 'synthcorr.png')
+    plt.savefig('pybo/static/img_dir/' + obj + 'synthcorr.png')
     plt.close()
 
     return render_template('correlation.html', synth_file='/img_dir/'+ obj + 'synthcorr.png', origin_file='/img_dir/'+ obj + 'origincorr.png')
 
-@bp.route('/syn_store',  methods=['GET','POST'])
+
+@bp.route('/syn_store', methods=['GET', 'POST'])
 def syn_store():
     obj = g.user.username
-    db = pymysql.connect(host="master.ckekx9n1eyul.ap-northeast-2.rds.amazonaws.com", user="admin", passwd="!dldirl7310", db="test", charset="utf8")
+    db = pymysql.connect(host="master.ckekx9n1eyul.ap-northeast-2.rds.amazonaws.com", user="admin",
+                         passwd="!dldirl7310", db="test", charset="utf8")
     cur = db.cursor()
 
     sql = 'insert into testtable (csvname, id, gen_time) values(%s,%s,%s)'
@@ -550,15 +536,13 @@ def syn_store():
     db.commit()
     db.close()
     s3 = boto3.resource('s3')
-    
+
     bucket_name = 'synthdir'
     bucket = s3.Bucket(bucket_name)
 
     local_file = "C:/finalproject/myproject/pybo/synth_dir/" + obj + str(index_add_counter) + ".csv"
     obj_file = obj + str(index_add_counter) + '.csv'
     bucket.upload_file(local_file, obj_file)
-
-
 
     return render_template('syn_store.html', data_list=data_list)
 
@@ -590,26 +574,6 @@ def hello_pybo3():
 
     return send_file(syn, as_attachment=True)
 
-'''
-    db_connection = pymysql.connect(
-        user='root',
-        passwd='1234',
-        host='127.0.0.1',
-        db='testpark',
-        port= '3306',
-        charset='utf8'
-    )
-    cursor = db.cursor(pymysql.cursors.DictCursor)
-    csvname = "park"
-    db = db_connection()
-  #  sql = 'insert into parktest (csvname, id, made_time) values(%s,%s,%s)'
-    cursor.execute(sql, (csvname, obj, datetime.now()))
-    db.commit()
-    db.close()
-'''
-
-
-
 
 
 
@@ -620,19 +584,7 @@ def hello_pybo3():
 @bp.route('/hello',  methods=['GET','POST'])
 def hello_pybo():
     obj = g.user.username
-    db = pymysql.connect(host="localhost", user="root", passwd="1234", db="testpark", charset="utf8")
-    cur = db.cursor()
-
-
-    sql = "SELECT * from park"
-    cur.execute(sql)
-    data_list = cur.fetchall()
-
-    db.commit()
-    db.close()
-    return render_template('test.html', data_list=data_list)
-
-
+    return obj
 
 '''
 # POST 형식으로 HTML 데이터 가져오기 -> 정제
@@ -653,15 +605,16 @@ def hello_pybo2():
 @bp.route('/hello2',  methods=['GET','POST'])
 def hello_pybo2():
     obj = g.user.username
-    original_data = pd.read_csv("C:/finalproject/myproject/pybo/uploads/" + obj + ".csv")
+    original_data = pd.read_csv("pybo/uploads/" + obj + ".csv")
     original_data = original_data.iloc[:, 1:]
-    synth_data = pd.read_csv("C:/finalproject/myproject/pybo/synth_dir/" + obj + ".csv")
+    synth_data = pd.read_csv("pybo/synth_dir/" + obj + ".csv")
     cate_col = []
     for i in range(0, len(original_data.columns)):
         if original_data.dtypes[i] != 'object':
             cate_col.append(original_data.columns[i])
     original_data = original_data[cate_col]
     return render_template('regression.html', list=original_data)
+
 
 
 

@@ -3,18 +3,16 @@ from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
 
 import config
-from datetime import datetime
 
 db = SQLAlchemy()
 migrate = Migrate()
 
-index_add_counter = 0
 
 def create_app():
     app = Flask(__name__)
     app.config.from_object(config)
     app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
-    global index_add_counter
+
     # ORM
     db.init_app(app)
     migrate.init_app(app, db)

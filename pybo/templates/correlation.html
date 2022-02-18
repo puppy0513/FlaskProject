@@ -7,23 +7,29 @@
     <title>Title</title>
 </head>
 <body>
-      <h1>correlation</h1>
+<div class="parent">
+    <div class="child2"></div>
+    <div class="child1 border-line">
+        <h1>correlation</h1>
 
-      <div>
-          origin
-  <img src="{{  url_for('static', filename = origin_file) }}">
+        <div>
+            origin
+            <img src="{{  url_for('static', filename = origin_file) }}">
+        </div>
+        <hr>
+        <div>
+            synth
+            <img src="{{  url_for('static', filename = synth_file) }}">
+        </div>
+
+        <hr>
+
+        <a href="{{ url_for('main.regression') }}" class="btn btn-primary">회귀분석(베타) 하러가기</a>
+        <a href="{{ url_for('main.render_file') }}" class="btn btn-primary">돌아가기</a>
     </div>
-      <hr>
-      <div>
-          synth
-  <img src="{{  url_for('static', filename = synth_file) }}">
-      </div>
-
-          <hr>
-
-        <a href="{{ url_for('main.regression') }}" class="btn btn-primary" >회귀분석(베타) 하러가기</a>
-      <a href="{{ url_for('main.render_file') }}" class="btn btn-primary" >돌아가기</a>
-   </body>
+    <div class="child2"></div>
+</div>
+</body>
 </html>
 
 {% endblock %}

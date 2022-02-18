@@ -30,8 +30,6 @@ def signup():
     return render_template('auth/signup.html', form=form)
 
 
-
-
 @bp.route('/login/', methods=('GET', 'POST'))
 def login():
     form = UserLoginForm()
@@ -45,7 +43,6 @@ def login():
         if error is None:
             session.clear()
             session['user_id'] = user.id
-            session.permanent = True
             return redirect(url_for('main.index'))
         flash(error)
     return render_template('auth/login.html', form=form)
