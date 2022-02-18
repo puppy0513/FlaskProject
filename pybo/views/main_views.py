@@ -28,19 +28,24 @@ import PIL
 from PIL import Image, ImageDraw, ImageFont
 import os
 import pymysql
-
-
+import datetime
+import boto3
 
 bp = Blueprint('main', __name__, url_prefix='/')
 app = Flask(__name__)
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
 app.debug = True
+ALLOWED_EXTENSIONS = set(['txt', 'csv'])
+app.config.update(
+    PERMANENT_SESSION_LIFETIME=600
+)
 
 from pybo.models import Question
 # from datasets.adult import df, dtypes
 # from pybo.synthpop.datasets.adult import df, dtypes
 
 global obj
+
 
 @bp.route('/manual')
 def manual():
@@ -52,6 +57,8 @@ def index():
     return redirect(url_for('question._list'))
 
 
+
+
 @bp.route('/')
 def main():
     return render_template('main.html')
@@ -60,36 +67,89 @@ def main():
 @bp.route('/upload')
 @login_required
 def render_file():
+    obj = g.user.username
+    file = "C:/finalproject/myproject/pybo/uploads/" + obj + ".csv"
+    try:
+        os.remove(file)
+    except OSError:
+        pass
 
+    file2 = "C:/finalproject/myproject/pybo/uploads/" + obj + ".json"
+    try:
+        os.remove(file2)
+    except OSError:
+        pass
+
+    list2 = ['origincorr', 'originreg', 'synthcorr', 'synthreg', 'dis']
+    for i in range(0, len(list2)):
+        file3 = "C:/finalproject/myproject/pybo/static/img_dir/" + obj + list2[i] + ".png"
+        try:
+            os.remove(file3)
+        except OSError:
+            pass
     return render_template('upload.html')
 
 
 
+
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
 
 # /home/ubuntu/projects/myproject/pybo/uploads
 # 파일 업로드 처리
 @bp.route('/fileUpload', methods = ['GET', 'POST'])
 def upload_file():
     if request.method == 'POST':
-        f = request.files['file']
-        # f = pd.DataFrame(data = request.files['file'])
-        # 저장할 경로 + 파일명
-
         obj = g.user.username
-        #  ff = pd.DataFrame(data = f)
-        f.save("C:/finalproject/myproject/pybo/uploads/" + obj + '.csv')
+        f = request.files['file']
+        if f and allowed_file(f.filename):
+            f.save("C:/finalproject/myproject/pybo/uploads/" + obj + '.csv')
+        else:
+            return render_template('extension_error.html')
+
+
+            #  ff = pd.DataFrame(data = f)
         # fff = pd.read_csv("C:/finalproject/myproject/pybo/uploads/" + obj + '.csv', encoding='CP949')
         fff = pd.read_csv("C:/finalproject/myproject/pybo/uploads/" + obj + '.csv')
-        # return f.to_html()
-        df_info = fff
-        df_col = []
-        for i in range(0, len(df_info.columns)):
-            df_col.append(df_info.columns[i])
+        asd = pd.read_csv("C:/finalproject/myproject/pybo/uploads/" + obj + '.csv')
 
+        cate_col = []
+        for i in range(0, len(fff.columns)):
+            if fff.dtypes[i] != 'object':
+                cate_col.append(fff.columns[i])
 
-        df2 = df_info.iloc[:10]
+        std = fff[cate_col].std()
+        mean = fff[cate_col].mean()
+        a = []
 
-        return render_template('upload2.html', tables=[df2.to_html()], titles=[''])
+        for i in range(len(mean)):
+            line = []
+            for j in range(1):
+                line.append(mean[i] - (3 * std[i]))
+                line.append(mean[i] + (3 * std[i]))
+            a.append(line)
+
+        k = 0
+        delete = []
+
+        for i in fff[cate_col]:
+            for j in range(len(fff[cate_col])):
+                if fff[cate_col][i][j] < a[k][0] or fff[cate_col][i][j] > a[k][1]:
+                    delete.append(j)
+            k += 1
+
+        my_set = set(delete)  # 집합set으로 변환
+        delete = list(my_set)  # list로 변환
+
+        for i in delete:
+            fff.drop(i, axis=0, inplace=True)
+
+        df_info = fff.iloc[0:10]
+        
+        fff.to_csv("C:/finalproject/myproject/pybo/uploads/" + obj + '.csv', index=False)
+
+        return render_template('upload2.html', tables=[df_info.to_html()], titles=[''], refine_shape = fff.shape, origin_shape = asd.shape)
 
 
 # json 생성
@@ -151,6 +211,9 @@ def to_json_part():
 
     return render_template('to_json_part.html', df_col=df_col, count = count)
 
+
+
+
 # json 생성2
 @bp.route('/to_json_part2', methods=['GET', 'POST'])
 def to_json_part2():
@@ -188,11 +251,109 @@ def to_json_part2():
         to_json[df_col2[i]] = df_type2[i]
     with open("C:/finalproject/myproject/pybo/uploads/" + obj + ".json", 'w') as f:
         json.dump(to_json, f)
-    count = {}
+
     for i in range(0, len(df_col2)):
         count[i] = df_col2[i]
 
     return render_template('to_json_part2.html', df_col=df_col2, count = count)
+
+@bp.route('/syn_store2', methods=['GET', 'POST'])
+@login_required
+def syn_store2():
+    obj = g.user.username
+    db = pymysql.connect(host="master.ckekx9n1eyul.ap-northeast-2.rds.amazonaws.com", user="admin",
+                         passwd="!dldirl7310", db="test", charset="utf8")
+    cur = db.cursor()
+
+    sql = "SELECT * from testtable where id = (%s)"
+    cur.execute(sql, (obj))
+    data_list = cur.fetchall()
+
+    db.commit()
+    db.close()
+    count = {}
+    for i in range(0, len(data_list)):
+        count[i] = data_list[i][0]
+   # list2 = list(filter(None.__ne__, list1))
+    #df_info = df_info.drop(list2, axis=1)
+    
+    return render_template('syn_store2.html', count = count)
+
+
+@bp.route('/hello11', methods=['GET', 'POST'])
+def hello11():
+
+    obj = g.user.username
+    db = pymysql.connect(host="master.ckekx9n1eyul.ap-northeast-2.rds.amazonaws.com", user="admin",
+                         passwd="!dldirl7310", db="test", charset="utf8")
+    cur = db.cursor()
+
+    sql = "SELECT * from testtable where id = (%s)"
+    cur.execute(sql, (obj))
+    data_list = cur.fetchall()
+
+    db.commit()
+    db.close()
+
+    count = []
+    for i in range(0, len(data_list)):
+        count.append(data_list[i][0])
+
+    if request.method == 'POST':
+        val = request.form
+
+    list1 = list(val.keys())
+
+    list_a = list(map(int, list1))
+    count2 = []
+    for i in list_a:
+        count2.append(count[i])
+    s3 = boto3.resource('s3')
+    bucket_name = 'synthdir'
+    bucket = s3.Bucket(bucket_name)
+    for j in range(0, len(count2)):
+        obj_file = count2[j]+ '.csv'
+        save_file = 'C:/finalproject/myproject/pybo/synth_dir/'+ count2[j] + '.csv'
+        bucket.download_file(obj_file, save_file)
+
+    for k in range(0, len(count2)):
+        syn = "C:/finalproject/myproject/pybo/synth_dir/" + str(count2[0]) + ".csv"
+        result = send_file(syn, as_attachment=True)
+        return result
+
+    for l in range(0, len(count2)):
+        file = "C:/finalproject/myproject/pybo/uploads/" + count2[l] + ".csv"
+        try:
+            os.remove(file)
+        except OSError:
+            pass
+
+    return render_template('test.html')
+
+    # return str(list1)
+
+index_add_counter = []
+
+def syn_down(filename):
+    syn = "C:/finalproject/myproject/pybo/synth_dir/" + filename + ".csv"
+    return send_file(syn, as_attachment=True)
+
+
+def add_divide() :
+
+    global index_add_counter
+    index_add_counter.clear()
+
+    today = datetime.datetime.now()
+
+    index_add_counter.append(today.year)
+    index_add_counter.append(today.month)
+    index_add_counter.append(today.day)
+    index_add_counter.append(today.hour)
+    index_add_counter.append(today.minute)
+    index_add_counter.append(today.microsecond)
+
+
 
 
 # json 생성 및 재현데이터 생성
@@ -212,13 +373,18 @@ def synth_generate():
 
         spop = Synthpop()
         spop.fit(df, dtypes)
+        add_divide()
+
 
         synth_df = spop.generate(len(df))
         synth_df2 = synth_df.iloc[:10]
         df2 = df.iloc[:10]
-        synth_df.to_csv("C:/finalproject/myproject/pybo/synth_dir/" + obj + ".csv", index= False)
+        synth_df.to_csv("C:/finalproject/myproject/pybo/synth_dir/" + obj + str(index_add_counter) + ".csv", index= False)
         return render_template('synth_generate.html', tables=[df2.to_html()], titles=[''], tables2=[synth_df2.to_html()], titles2=[''])
         # return render_template('synth_generate.html', df=df, dtypes=dtypes)
+
+
+
 
 # json 생성 및 재현데이터 생성
 @bp.route('/partsynth_generate', methods=['GET', 'POST'])
@@ -248,12 +414,13 @@ def partsynth_generate():
         list2 = list(filter(None.__ne__, list1))
         df2 = df.drop(list2, axis=1)
 
+        add_divide()
 
         synth_df2 = synth_df[list2]
         result = pd.concat([df2, synth_df2], axis=1)
         df = df.iloc[:10]
         result2 = result.iloc[:10]
-        result.to_csv("C:/finalproject/myproject/pybo/synth_dir/" + obj + ".csv", index= False)
+        result.to_csv("C:/finalproject/myproject/pybo/synth_dir/" + obj + str(index_add_counter) + ".csv", index= False)
         return render_template('partsynth_generate.html', tables=[df.to_html()], titles=[''], tables2=[result2.to_html()], titles2=[''])
 
 
@@ -264,7 +431,7 @@ def distribution():
     obj = g.user.username
     original_data = pd.read_csv("C:/finalproject/myproject/pybo/uploads/" + obj + ".csv")
     original_data = original_data.iloc[:,1:]
-    synth_data = pd.read_csv("C:/finalproject/myproject/pybo/synth_dir/" + obj + ".csv")
+    synth_data = pd.read_csv("C:/finalproject/myproject/pybo/synth_dir/" + obj + str(index_add_counter) + ".csv")
     cate_col = []
     for i in range(0, len(original_data.columns)):
         if original_data.dtypes[i] != 'object':
@@ -290,7 +457,7 @@ def regression():
     obj = g.user.username
     original_data = pd.read_csv("C:/finalproject/myproject/pybo/uploads/" + obj + ".csv")
     original_data = original_data.iloc[:, 1:]
-    synth_data = pd.read_csv("C:/finalproject/myproject/pybo/synth_dir/" + obj + ".csv")
+    synth_data = pd.read_csv("C:/finalproject/myproject/pybo/synth_dir/" + obj + str(index_add_counter) + ".csv")
     cate_col = []
     for i in range(0, len(original_data.columns)):
         if original_data.dtypes[i] != 'object':
@@ -341,7 +508,6 @@ def regression():
     target_image2.save('C:/finalproject/myproject/pybo/static/img_dir/' + obj + 'synthreg.png')
     target_image2.close()
 
-
     return render_template('regression.html', origin_file='/img_dir/'+ obj + 'originreg.png', synth_file='/img_dir/'+ obj + 'synthreg.png')
 
 
@@ -352,7 +518,7 @@ def correlation():
     plt.close()
     original_data = pd.read_csv("C:/finalproject/myproject/pybo/uploads/" + obj + ".csv")
     original_data = original_data.iloc[:, 1:]
-    synth_data = pd.read_csv("C:/finalproject/myproject/pybo/synth_dir/" + obj + ".csv")
+    synth_data = pd.read_csv("C:/finalproject/myproject/pybo/synth_dir/" + obj + str(index_add_counter) + ".csv")
     corr_df = original_data.corr()
     corr_df = corr_df.apply(lambda x: round(x, 2))
 
@@ -368,6 +534,34 @@ def correlation():
 
     return render_template('correlation.html', synth_file='/img_dir/'+ obj + 'synthcorr.png', origin_file='/img_dir/'+ obj + 'origincorr.png')
 
+@bp.route('/syn_store',  methods=['GET','POST'])
+def syn_store():
+    obj = g.user.username
+    db = pymysql.connect(host="master.ckekx9n1eyul.ap-northeast-2.rds.amazonaws.com", user="admin", passwd="!dldirl7310", db="test", charset="utf8")
+    cur = db.cursor()
+
+    sql = 'insert into testtable (csvname, id, gen_time) values(%s,%s,%s)'
+    cur.execute(sql, (obj + str(index_add_counter), obj, datetime.datetime.now()))
+
+    sql = "SELECT * from testtable where id = (%s)"
+    cur.execute(sql, (obj))
+    data_list = cur.fetchall()
+
+    db.commit()
+    db.close()
+    s3 = boto3.resource('s3')
+    
+    bucket_name = 'synthdir'
+    bucket = s3.Bucket(bucket_name)
+
+    local_file = "C:/finalproject/myproject/pybo/synth_dir/" + obj + str(index_add_counter) + ".csv"
+    obj_file = obj + str(index_add_counter) + '.csv'
+    bucket.upload_file(local_file, obj_file)
+
+
+
+    return render_template('syn_store.html', data_list=data_list)
+
 
 
 @bp.route('/hello3')
@@ -375,18 +569,47 @@ def hello_pybo3():
     obj = g.user.username
 
     file = "C:/finalproject/myproject/pybo/uploads/" + obj + ".csv"
-    if os.path.isfile(file):
+    try:
         os.remove(file)
-    path = "C:/finalproject/myproject/pybo/synth_dir/" + obj + ".csv"
+    except OSError:
+        pass
+
+    syn = "C:/finalproject/myproject/pybo/synth_dir/" + obj + str(index_add_counter) + ".csv"
+
     file2 = "C:/finalproject/myproject/pybo/uploads/" + obj + ".json"
-    if os.path.isfile(file2):
+    try:
         os.remove(file2)
+    except OSError:
+        pass
+
+    file3 = "C:/finalproject/myproject/pybo/uploads/" + obj + "%.png"
+    try:
+        os.remove(file3)
+    except OSError:
+        pass
+
+    return send_file(syn, as_attachment=True)
+
+'''
+    db_connection = pymysql.connect(
+        user='root',
+        passwd='1234',
+        host='127.0.0.1',
+        db='testpark',
+        port= '3306',
+        charset='utf8'
+    )
+    cursor = db.cursor(pymysql.cursors.DictCursor)
+    csvname = "park"
+    db = db_connection()
+  #  sql = 'insert into parktest (csvname, id, made_time) values(%s,%s,%s)'
+    cursor.execute(sql, (csvname, obj, datetime.now()))
+    db.commit()
+    db.close()
+'''
 
 
 
-
-
-    return send_file(path, as_attachment=True)
 
 
 
@@ -397,7 +620,19 @@ def hello_pybo3():
 @bp.route('/hello',  methods=['GET','POST'])
 def hello_pybo():
     obj = g.user.username
-    return obj
+    db = pymysql.connect(host="localhost", user="root", passwd="1234", db="testpark", charset="utf8")
+    cur = db.cursor()
+
+
+    sql = "SELECT * from park"
+    cur.execute(sql)
+    data_list = cur.fetchall()
+
+    db.commit()
+    db.close()
+    return render_template('test.html', data_list=data_list)
+
+
 
 '''
 # POST 형식으로 HTML 데이터 가져오기 -> 정제

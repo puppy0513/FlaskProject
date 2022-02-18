@@ -10,9 +10,9 @@
     <p>
          <button type="button" onclick="location.href='/' ">뒤로가기</button>
     </p>
-
    	<div class="container">
          <h1> 원본데이터 - Head</h1>
+        <h2>정제 전 : {{origin_shape}}, 정제 후 : {{refine_shape}}</h2>
     <table class="table table-dark">
                 <!--Displaying the converted table-->
                      {% for table in tables %}
