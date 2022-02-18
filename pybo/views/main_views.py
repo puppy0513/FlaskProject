@@ -65,7 +65,7 @@ def allowed_file(filename):
            filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
 
 # 업로드 HTML 렌더링
-@bp.route('/upload')
+@bp.route('/upload', methods = ['GET', 'POST'])
 @login_required
 def render_file():
     obj = g.user.username
