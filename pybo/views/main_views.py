@@ -73,13 +73,13 @@ def upload_file():
         obj = g.user.username
         f = request.files['file']
         if f and allowed_file(f.filename):
-            f.save("C:/finalproject/myproject/pybo/uploads/" + obj + '.csv')
+            f.save("/home/ubuntu/projects/FlaskProject/pybo/uploads/" + obj + '.csv')
         else:
             return render_template('extension_error.html')
 
             #  ff = pd.DataFrame(data = f)
-        fff = pd.read_csv("C:/finalproject/myproject/pybo/uploads/" + obj + '.csv')
-        asd = pd.read_csv("C:/finalproject/myproject/pybo/uploads/" + obj + '.csv')
+        fff = pd.read_csv("/home/ubuntu/projects/FlaskProject/pybo/uploads/" + obj + '.csv')
+        asd = pd.read_csv("/home/ubuntu/projects/FlaskProject/pybo/uploads/" + obj + '.csv')
         cate_col = []
         for i in range(0, len(fff.columns)):
             if fff.dtypes[i] != 'object':
@@ -113,7 +113,7 @@ def upload_file():
 
         df_info = fff
 
-        df_info.to_csv("C:/finalproject/myproject/pybo/uploads/" + obj + '.csv')
+        df_info.to_csv("/home/ubuntu/projects/FlaskProject/pybo/uploads/" + obj + '.csv')
         df_info3 = df_info.iloc[0:10]
 
         df_col = []
@@ -134,7 +134,7 @@ def upload_file():
 def partsynth_generate():
     obj = g.user.username
 
-    fff = pd.read_csv("C:/finalproject/myproject/pybo/uploads/" + obj + '.csv')
+    fff = pd.read_csv("/home/ubuntu/projects/FlaskProject/pybo/uploads/" + obj + '.csv')
     fff = fff.iloc[:, 1:]
     df_col2 = []
 
@@ -153,15 +153,15 @@ def partsynth_generate():
     # 이렇게 dict로 주지 않으면 list형식으로 들어감 ;
     for i in range(1, len(fff.columns)):
         to_json[df_col2[i]] = df_type2[i]
-    with open("C:/finalproject/myproject/pybo/uploads/" + obj + ".json", 'w') as f:
+    with open("/home/ubuntu/projects/FlaskProject/pybo/uploads/" + obj + ".json", 'w') as f:
         json.dump(to_json, f)
 
-    # df = pd.read_csv("C:/finalproject/myproject/pybo/uploads/" + obj + ".csv")
-    with open("C:/finalproject/myproject/pybo/uploads/" + obj + ".json", 'r') as f:
+    # df = pd.read_csv("/home/ubuntu/projects/FlaskProject/pybo/uploads/" + obj + ".csv")
+    with open("/home/ubuntu/projects/FlaskProject/pybo/uploads/" + obj + ".json", 'r') as f:
         dtypes = json.load(f)
     columns = list(dtypes.keys())
 
-    rrf = pd.read_csv("C:/finalproject/myproject/pybo/uploads/" + obj + '.csv', header=None, skiprows=1,
+    rrf = pd.read_csv("/home/ubuntu/projects/FlaskProject/pybo/uploads/" + obj + '.csv', header=None, skiprows=1,
                       names=columns).astype(dtypes)
     # 헤더가 있는 경우 -> skip
 
@@ -191,7 +191,7 @@ def partsynth_generate():
 
     df = fff.iloc[:10]
     result2 = result.iloc[:10]
-    result.to_csv("C:/finalproject/myproject/pybo/synth_dir/" + obj + str(index_add_counter) + ".csv", index=False)
+    result.to_csv("/home/ubuntu/projects/FlaskProject/pybo/synth_dir/" + obj + str(index_add_counter) + ".csv", index=False)
 
     return render_template('partsynth_generate.html', tables=[df.to_html()], titles=[''], tables2=[result2.to_html()],
                            titles2=[''])
