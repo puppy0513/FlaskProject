@@ -7,29 +7,47 @@
     <title>Title</title>
 </head>
 <body>
+    <p>
+         <button type="button" onclick="location.href='/' ">뒤로가기</button>
+    </p>
+   	<div class="container">
+         <h1> 원본데이터 - 앞 10개 행</h1>
 
-<div class="container">
-    <h1> 원본데이터 - Head</h1>
-    <h2>정제 전 : {{origin_shape}}, 정제 후 : {{refine_shape}}</h2>
-    <table class="table table-active">
-        <!--Displaying the converted table-->
-        {% for table in tables %}
-        {{titles[loop.index]}}
-        <td>
-            {{ table|safe }}
-        </td>
-        {% endfor %}
+        <form action="\partsynth_generate" method="post" class="input-form">
+    <table>
+	<h4> 변경할 컬럼</h4>
 
-    </table>
-    <div class="parent">
-    <div class="child1 ">
-<button class="btn btn-secondary" type="button" onclick="location.href='/' ">뒤로가기</button>
-<a href="{{ url_for('main.to_json') }}" class="btn" style="background-color:#695784; color:white;">완전 재현데이터</a>
-<a href="{{ url_for('main.to_json_part') }}" class="btn" style="background-color:#695784; color:white;"s>부분 재현데이터</a>
+	<tr>
+
+<div class="btn-group" role="group" aria-label="Basic checkbox toggle button group">
+ {% for key, value in count.items() %}
+
+  <input type="checkbox" value = {{value}} name={{value}} class="btn-check" id={{key}} autocomplete="off">
+  <label class="btn btn-outline-primary" for={{key}}>{{value}}</label>
+
+		{% endfor %}
 </div>
+	</tr>
+	<hr>
+
+</table>
+    <table class="table table-dark">
+                <!--Displaying the converted table-->
+                     {% for table in tables %}
+                    {{titles[loop.index]}}
+                    <td>
+                    {{ table|safe }}
+                        </td>
+                    {% endfor %}
+
+        </table>
+
+    	  <input type="submit" value="다음" class="btn" class="btn" style="background-color:#695784; color:white;">
+</form>
+        <button class="btn btn-secondary" type="button" onclick="location.href='/' ">뒤로가기</button>
 </div>
 </body>
 </html>
 
 
-{% endblock %}  
+{% endblock %}
