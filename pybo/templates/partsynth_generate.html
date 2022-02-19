@@ -9,10 +9,19 @@
 <body>
 <div class="container">
     <!-- Content here -->
-    <h1> 재현데이터 - Head</h1>
+    <h1> 원본데이터</h1>
     <table class="table table-light">
         <!--Displaying the converted table-->
         {% for table in df %}
+
+        <td class="table-active">{{ table|safe }}</td>
+        {% endfor %}
+    </table>
+
+    <h1> 재현데이터</h1>
+    <table class="table table-light">
+        <!--Displaying the converted table-->
+        {% for table in df2 %}
         
         <td class="table-active">{{ table|safe }}</td>
         {% endfor %}

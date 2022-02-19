@@ -64,36 +64,8 @@ def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
 
-# 업로드 HTML 렌더링
-@bp.route('/upload', methods = ['GET', 'POST'])
-@login_required
-def render_file():
-    obj = g.user.username
-    file = "/home/ubuntu/projects/FlaskProject/pybo/uploads/" + obj + ".csv"
-    try:
-        os.remove(file)
-    except OSError:
-        pass
 
-    file2 = "/home/ubuntu/projects/FlaskProject/pybo/uploads/" + obj + ".json"
-    try:
-        os.remove(file2)
-    except OSError:
-        pass
-
-    list2 = ['origincorr', 'originreg', 'synthcorr', 'synthreg', 'dis']
-    for i in range(0, len(list2)):
-        file3 = "/home/ubuntu/projects/FlaskProject/pybo/static/img_dir/" + obj + list2[i] + ".png"
-        try:
-            os.remove(file3)
-        except OSError:
-            pass
-    return render_template('upload.html')
-
-
-
-
-# /home/ubuntu/projects/myproject/:\finalproject_2/myproject/pybo/uploads
+# /home/ubuntu/projects/myproject/pybo/uploads
 # 파일 업로드 처리
 @bp.route('/fileUpload', methods=['GET', 'POST'])
 def upload_file():
@@ -101,15 +73,13 @@ def upload_file():
         obj = g.user.username
         f = request.files['file']
         if f and allowed_file(f.filename):
-            f.save("/home/ubuntu/projects/FlaskProject/pybo/uploads/" + obj + '.csv')
+            f.save("C:/finalproject/myproject/pybo/uploads/" + obj + '.csv')
         else:
             return render_template('extension_error.html')
 
             #  ff = pd.DataFrame(data = f)
-        # fff = pd.read_csv("/:\finalproject_2/myproject/pybo/uploads/" + obj + '.csv', encoding='CP949')
-        fff = pd.read_csv("/home/ubuntu/projects/FlaskProject/pybo/uploads/" + obj + '.csv')
-        asd = pd.read_csv("/home/ubuntu/projects/FlaskProject/pybo/uploads/" + obj + '.csv')
-
+        fff = pd.read_csv("C:/finalproject/myproject/pybo/uploads/" + obj + '.csv')
+        asd = pd.read_csv("C:/finalproject/myproject/pybo/uploads/" + obj + '.csv')
         cate_col = []
         for i in range(0, len(fff.columns)):
             if fff.dtypes[i] != 'object':
@@ -141,115 +111,90 @@ def upload_file():
         for i in delete:
             fff.drop(i, axis=0, inplace=True)
 
-        df_info = fff.iloc[0:10]
+        df_info = fff
 
-        fff.to_csv("/home/ubuntu/projects/FlaskProject/pybo/uploads/" + obj + '.csv', index=False)
+        df_info.to_csv("C:/finalproject/myproject/pybo/uploads/" + obj + '.csv')
+        df_info3 = df_info.iloc[0:10]
 
-        return render_template('upload2.html', tables=[df_info.to_html()], titles=[''], refine_shape=fff.shape,
-                               origin_shape=asd.shape)
-
-
-# json 생성
-@bp.route('/to_json', methods=['GET', 'POST'])
-def to_json():
-        obj = g.user.username
-        df_info = pd.read_csv("/home/ubuntu/projects/FlaskProject/pybo/uploads/" + obj + ".csv")
         df_col = []
 
-        for i in range(0, len(df_info.columns)):
-            df_col.append(df_info.columns[i])
-        df_type = []
-        for i in range(0, len(df_info.columns)):
-            if (df_info.dtypes[i] == 'int64'):
-                df_type.append('int')
-            elif (df_info.dtypes[i] == 'float64'):
-                df_type.append('float')
-            else:
-                df_type.append('category')
+        for i in range(0, len(fff.columns)):
+            df_col.append(fff.columns[i])
 
-        to_json = {df_col[0]: df_type[0]}
-        # 이렇게 dict로 주지 않으면 list형식으로 들어감 ;
-        for i in range(1, len(df_info.columns)):
-            to_json[df_col[i]] = df_type[i]
-        with open("/home/ubuntu/projects/FlaskProject/pybo/uploads/" + obj + ".json", 'w') as f:
-            json.dump(to_json, f)
-        
-        return render_template('to_json.html', df=df_info, dof_col=df_col)
-
-
-# json 생성
-@bp.route('/to_json_part', methods=['GET', 'POST'])
-def to_json_part():
-    obj = g.user.username
-    df_info = pd.read_csv("/home/ubuntu/projects/FlaskProject/pybo/uploads/" + obj + ".csv")
-    df_col = []
-
-    for i in range(0, len(df_info.columns)):
-        df_col.append(df_info.columns[i])
-    df_type = []
-    for i in range(0, len(df_info.columns)):
-        if (df_info.dtypes[i] == 'int64'):
-            df_type.append('int')
-        elif (df_info.dtypes[i] == 'float64'):
-            df_type.append('float')
-        else:
-            df_type.append('category')
-
-    to_json = {df_col[0]: df_type[0]}
-    # 이렇게 dict로 주지 않으면 list형식으로 들어감 ;
-    for i in range(1, len(df_info.columns)):
-        to_json[df_col[i]] = df_type[i]
-    with open("/home/ubuntu/projects/FlaskProject/pybo/uploads/" + obj + ".json", 'w') as f:
-        json.dump(to_json, f)
-
-    count = {}
-    for i in range(0, len(df_col)):
-        count[i] = df_col[i]
-
-    return render_template('to_json_part.html', df_col=df_col, count = count)
-
-# json 생성2
-@bp.route('/to_json_part2', methods=['GET', 'POST'])
-def to_json_part2():
-    obj = g.user.username
-    df_info = pd.read_csv("/home/ubuntu/projects/FlaskProject/pybo/uploads/" + obj + ".csv")
-    df_col = []
-    list1 = []
-    for i in range(0, len(df_info.columns)):
-        df_col.append(df_info.columns[i])
-    if request.method == 'POST':
+        count = {}
         for i in range(0, len(df_col)):
-            list1.append(request.form.get(df_col[i]))
-    list2 = list(filter(None.__ne__, list1))
-    df_info = df_info.drop(list2, axis=1)
-    df_info.to_csv("/home/ubuntu/projects/FlaskProject/pybo/uploads/" + obj + '.csv')
-    df_info2 = pd.read_csv("/home/ubuntu/projects/FlaskProject/pybo/uploads/" + obj + '.csv')
-    df_info2 = df_info2.iloc[:,1:]
-    df_info2.to_csv("/home/ubuntu/projects/FlaskProject/pybo/uploads/" + obj + '.csv')
+            count[i] = df_col[i]
+
+        return render_template('upload2.html', tables=[df_info3.to_html()], titles=[''], count=count,
+                               refine_shape=df_info.shape, origin_shape=asd.shape)
+
+
+# json 생성 및 재현데이터 생성
+@bp.route('/partsynth_generate', methods=['GET', 'POST'])
+def partsynth_generate():
+    obj = g.user.username
+
+    fff = pd.read_csv("C:/finalproject/myproject/pybo/uploads/" + obj + '.csv')
+    fff = fff.iloc[:, 1:]
     df_col2 = []
 
-    for i in range(0, len(df_info2.columns)):
-        df_col2.append(df_info2.columns[i])
+    for i in range(0, len(fff.columns)):
+        df_col2.append(fff.columns[i])
     df_type2 = []
-    for i in range(0, len(df_info2.columns)):
-        if (df_info2.dtypes[i] == 'int64'):
+    for i in range(0, len(fff.columns)):
+        if (fff.dtypes[i] == 'int64'):
             df_type2.append('int')
-        elif (df_info2.dtypes[i] == 'float64'):
+        elif (fff.dtypes[i] == 'float64'):
             df_type2.append('float')
         else:
             df_type2.append('category')
 
     to_json = {df_col2[0]: df_type2[0]}
     # 이렇게 dict로 주지 않으면 list형식으로 들어감 ;
-    for i in range(1, len(df_info2.columns)):
+    for i in range(1, len(fff.columns)):
         to_json[df_col2[i]] = df_type2[i]
-    with open("/home/ubuntu/projects/FlaskProject/pybo/uploads/" + obj + ".json", 'w') as f:
+    with open("C:/finalproject/myproject/pybo/uploads/" + obj + ".json", 'w') as f:
         json.dump(to_json, f)
-    count = {}
-    for i in range(0, len(df_col2)):
-        count[i] = df_col2[i]
 
-    return render_template('to_json_part2.html', df_col=df_col2, count = count)
+    # df = pd.read_csv("C:/finalproject/myproject/pybo/uploads/" + obj + ".csv")
+    with open("C:/finalproject/myproject/pybo/uploads/" + obj + ".json", 'r') as f:
+        dtypes = json.load(f)
+    columns = list(dtypes.keys())
+
+    rrf = pd.read_csv("C:/finalproject/myproject/pybo/uploads/" + obj + '.csv', header=None, skiprows=1,
+                      names=columns).astype(dtypes)
+    # 헤더가 있는 경우 -> skip
+
+    # rrf = rrf.iloc[:,1:]
+    rrf.apply(pd.to_numeric, errors='coerce')
+
+    spop = Synthpop()
+    spop.fit(rrf, dtypes)
+
+    synth_df = spop.generate(len(rrf))
+
+    df_col = []
+    list1 = []
+    for i in range(0, len(fff.columns)):
+        df_col.append(fff.columns[i])
+    if request.method == 'POST':
+        for i in range(0, len(df_col)):
+            list1.append(request.form.get(df_col[i]))
+    list2 = list(filter(None.__ne__, list1))
+
+    df2 = rrf.drop(list2, axis=1)
+
+    add_divide()
+
+    synth_df2 = synth_df[list2]
+    result = pd.concat([synth_df2, df2], axis=1)
+
+    df = fff.iloc[:10]
+    result2 = result.iloc[:10]
+    result.to_csv("C:/finalproject/myproject/pybo/synth_dir/" + obj + str(index_add_counter) + ".csv", index=False)
+
+    return render_template('partsynth_generate.html', tables=[df.to_html()], titles=[''], tables2=[result2.to_html()],
+                           titles2=[''])
 
 
 @bp.route('/syn_store2', methods=['GET', 'POST'])
@@ -341,74 +286,6 @@ def add_divide() :
     index_add_counter.append(today.hour)
     index_add_counter.append(today.minute)
     index_add_counter.append(today.microsecond)
-
-
-
-# json 생성 및 재현데이터 생성
-@bp.route('/synth_generate', methods=['GET', 'POST'])
-def synth_generate():
-        obj = g.user.username
-
-        # df = pd.read_csv("/:\finalproject_2/myproject/pybo/uploads/" + obj + ".csv")
-        with open("/home/ubuntu/projects/FlaskProject/pybo/uploads/" + obj + ".json", 'r') as f:
-            dtypes = json.load(f)
-        columns = list(dtypes.keys())
-
-        df = pd.read_csv("/home/ubuntu/projects/FlaskProject/pybo/uploads/" + obj + ".csv", header=None, skiprows = 1, names=columns).astype(dtypes)
-        # 헤더가 있는 경우 -> skip
-
-        df.apply(pd.to_numeric, errors='coerce')
-
-        spop = Synthpop()
-        spop.fit(df, dtypes)
-        add_divide()
-
-
-        synth_df = spop.generate(len(df))
-        synth_df2 = synth_df.iloc[:10]
-        df2 = df.iloc[:10]
-        synth_df.to_csv("/home/ubuntu/projects/FlaskProject/pybo/synth_dir/" + obj + str(index_add_counter) + ".csv", index= False)
-        return render_template('synth_generate.html', df=[df2.to_html()], titles=[''], df2=[synth_df2.to_html()], titles2=[''])
-        # return render_template('synth_generate.html', df=df, dtypes=dtypes)
-
-
-
-# json 생성 및 재현데이터 생성
-@bp.route('/partsynth_generate', methods=['GET', 'POST'])
-def partsynth_generate():
-        obj = g.user.username
-
-        # df = pd.read_csv("/:\finalproject_2/myproject/pybo/uploads/" + obj + ".csv")
-        with open("/home/ubuntu/projects/FlaskProject/pybo/uploads/" + obj + ".json", 'r') as f:
-            dtypes = json.load(f)
-        columns = list(dtypes.keys())
-
-        df = pd.read_csv("/home/ubuntu/projects/FlaskProject/pybo/uploads/" + obj + ".csv", header=None, skiprows = 1, names=columns).astype(dtypes)
-        # 헤더가 있는 경우 -> skip
-        df.apply(pd.to_numeric, errors='coerce')
-
-        spop = Synthpop()
-        spop.fit(df, dtypes)
-
-        synth_df = spop.generate(len(df))
-        df_col = []
-        for i in range(0, len(df.columns)):
-            df_col.append(df.columns[i])
-        list1 = []
-        if request.method == 'POST':
-            for i in range(0, len(df_col)):
-                list1.append(request.form.get(df_col[i]))
-        list2 = list(filter(None.__ne__, list1))
-        df2 = df.drop(list2, axis=1)
-
-        add_divide()
-
-        synth_df2 = synth_df[list2]
-        result = pd.concat([df2, synth_df2], axis=1)
-        df = df.iloc[:10]
-        result2 = result.iloc[:10]
-        result.to_csv("/home/ubuntu/projects/FlaskProject/pybo/synth_dir/" + obj + str(index_add_counter) + ".csv", index= False)
-        return render_template('partsynth_generate.html', df=[df.to_html()], titles=[''], tables2=[result2.to_html()], titles2=[''])
 
 
 
@@ -547,6 +424,12 @@ def syn_store():
     local_file = "/home/ubuntu/projects/FlaskProject/pybo/synth_dir/" + obj + str(index_add_counter) + ".csv"
     obj_file = obj + str(index_add_counter) + '.csv'
     bucket.upload_file(local_file, obj_file)
+
+    file = "/home/ubuntu/projects/FlaskProject/pybo/synth_dir/" + obj + str(index_add_counter) + ".csv"
+    try:
+        os.remove(file)
+    except OSError:
+        pass
 
     return render_template('syn_store.html', data_list=data_list)
 
