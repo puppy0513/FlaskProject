@@ -210,7 +210,7 @@ def partsynth_generate():
     list2 = list(filter(None.__ne__, list1))
 
     df2 = rrf.drop(list2, axis=1)
-
+    df2.to_csv("/home/ubuntu/projects/FlaskProject/pybo/uploads/" + obj + '.csv')
     add_divide()
 
     synth_df2 = synth_df[list2]
