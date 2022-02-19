@@ -163,6 +163,7 @@ def partsynth_generate():
 
     fff = pd.read_csv("/home/ubuntu/projects/FlaskProject/pybo/uploads/" + obj + '.csv')
     fff = fff.iloc[:, 1:]
+
     df_col2 = []
 
     for i in range(0, len(fff.columns)):
@@ -188,12 +189,13 @@ def partsynth_generate():
         dtypes = json.load(f)
     columns = list(dtypes.keys())
 
+    fff.to_csv("/home/ubuntu/projects/FlaskProject/pybo/uploads/" + obj + '.csv')
+
     rrf = pd.read_csv("/home/ubuntu/projects/FlaskProject/pybo/uploads/" + obj + '.csv', header=None, skiprows=1,
                       names=columns).astype(dtypes)
-    # 헤더가 있는 경우 -> skip
 
     # rrf = rrf.iloc[:,1:]
-    rrf.apply(pd.to_numeric, errors='coerce')
+    # rrf.apply(pd.to_numeric, errors='coerce')
 
     spop = Synthpop()
     spop.fit(rrf, dtypes)
@@ -202,15 +204,15 @@ def partsynth_generate():
 
     df_col = []
     list1 = []
-    for i in range(0, len(fff.columns)):
-        df_col.append(fff.columns[i])
+    for i in range(0, len(rrf.columns)):
+        df_col.append(rrf.columns[i])
     if request.method == 'POST':
         for i in range(0, len(df_col)):
             list1.append(request.form.get(df_col[i]))
     list2 = list(filter(None.__ne__, list1))
 
     df2 = rrf.drop(list2, axis=1)
-    df2.to_csv("/home/ubuntu/projects/FlaskProject/pybo/uploads/" + obj + '.csv')
+
     add_divide()
 
     synth_df2 = synth_df[list2]
