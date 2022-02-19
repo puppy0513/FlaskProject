@@ -30,7 +30,7 @@ import os
 import pymysql
 import datetime
 import boto3
-
+import statsmodels.api as sm
 
 bp = Blueprint('main', __name__, url_prefix='/')
 app = Flask(__name__)
