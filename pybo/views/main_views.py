@@ -65,6 +65,33 @@ def allowed_file(filename):
            filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
 
 
+# 업로드 HTML 렌더링
+@bp.route('/upload')
+@login_required
+def render_file():
+    obj = g.user.username
+    file = "/home/ubuntu/projects/FlaskProject/pybo/uploads/" + obj + ".csv"
+    try:
+        os.remove(file)
+    except OSError:
+        pass
+
+    file2 = "/home/ubuntu/projects/FlaskProject/pybo/uploads/" + obj + ".json"
+    try:
+        os.remove(file2)
+    except OSError:
+        pass
+
+    list2 = ['origincorr', 'originreg', 'synthcorr', 'synthreg', 'dis']
+    for i in range(0, len(list2)):
+        file3 = "/home/ubuntu/projects/FlaskProject/pybo/static/img_dir/" + obj + list2[i] + ".png"
+        try:
+            os.remove(file3)
+        except OSError:
+            pass
+    return render_template('upload.html')
+
+
 # /home/ubuntu/projects/myproject/pybo/uploads
 # 파일 업로드 처리
 @bp.route('/fileUpload', methods=['GET', 'POST'])
