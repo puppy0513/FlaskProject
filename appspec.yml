@@ -1,5 +1,18 @@
 version: 0.0
 os: linux
 files:
-  - source: /
-    destination: /
+  - source:  /
+    destination: /home/ubuntu/projects/myproject
+permissions:
+  - object: /home/ubuntu/projects/myproject
+    pattern: "*"
+    owner: root
+    mode: 777
+    type:
+      - file
+
+
+
+
+
+
