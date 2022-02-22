@@ -99,7 +99,7 @@ def allowed_file(filename):
            filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
 
 
-# /home/ubuntu/projects/myproject/pybo/uploads
+# /home/ubuntu/projects/myproject//home/ubuntu/projects/FlaskProject/pybo/uploads
 # 파일 업로드 처리
 @bp.route('/fileUpload', methods=['GET', 'POST'])
 def upload_file():

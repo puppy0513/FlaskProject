@@ -14,7 +14,7 @@
     flex: 2;
 }
 .child2 {
-    flex: 0.6;
+    flex: 0.4;
 }
 
 .files input {
@@ -34,7 +34,7 @@
 .files{ position:relative}
 .files:after {  pointer-events: none;
     position: absolute;
-    top: 60px;
+    top: 120px;
     left: 0;
     width: 50px;
     right: 0;
@@ -49,7 +49,7 @@
 .color input{ background-color:#695784;}
 .files:before {
     position: absolute;
-    bottom: 10px;
+    bottom: 6px;
     left: 0;  pointer-events: none;
     width: 100%;
     right: 0;
@@ -61,4 +61,26 @@
     font-weight: 600;
     text-transform: capitalize;
     text-align: center;
+}
+
+a.btn{
+    display:block;
+    width:200px;
+    line-height:30px;
+    text-align:center;
+    background-color:#e6e6e3;
+    color:black;
+}
+
+.outer {
+  display: flex;
+  justify-content: center;
+}
+
+.btn:hover{color:#666664;}
+
+.hover1:hover{ box-shadow:-200px 0 0 0 rgba(0,0,0,0.5) inset; }
+
+h1.cen{
+text-align:center;
 }
