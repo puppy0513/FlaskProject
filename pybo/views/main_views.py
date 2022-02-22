@@ -1,5 +1,5 @@
 import time
-from flask import Blueprint, render_template, url_for , request, session, jsonify, g
+from flask import Blueprint, render_template, url_for, request, session, jsonify, g
 from werkzeug.utils import redirect
 from werkzeug.utils import secure_filename
 import os
@@ -9,28 +9,31 @@ import json
 from werkzeug.routing import BaseConverter, ValidationError
 from synthpop import Synthpop
 from warnings import simplefilter
+
 simplefilter(action="ignore", category=pd.errors.PerformanceWarning)
 import matplotlib
+
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import seaborn as sns
 import numpy as np
-#warning
+# warning
 import warnings
+
 warnings.filterwarnings('ignore')
 from flask import send_file
 from flask import send_from_directory
 from pybo.views.auth_views import login_required
 from operator import is_not
 from functools import partial
-from sklearn.linear_model import  LinearRegression
+from sklearn.linear_model import LinearRegression
 import PIL
 from PIL import Image, ImageDraw, ImageFont
 import os
 import pymysql
 import datetime
 import boto3
-import statsmodels.api as sm
+import io
 
 bp = Blueprint('main', __name__, url_prefix='/')
 app = Flask(__name__)
@@ -40,11 +43,14 @@ ALLOWED_EXTENSIONS = set(['txt', 'csv'])
 app.config.update(
     PERMANENT_SESSION_LIFETIME=600
 )
+
 from pybo.models import Question
+
 # from datasets.adult import df, dtypes
 # from pybo.synthpop.datasets.adult import df, dtypes
 
 global obj
+
 
 @bp.route('/manual')
 def manual():
@@ -59,10 +65,6 @@ def index():
 @bp.route('/')
 def main():
     return render_template('main.html')
-
-def allowed_file(filename):
-    return '.' in filename and \
-           filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
 
 
 # 업로드 HTML 렌더링
@@ -92,11 +94,20 @@ def render_file():
     return render_template('upload.html')
 
 
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
+
+
 # /home/ubuntu/projects/myproject/pybo/uploads
 # 파일 업로드 처리
 @bp.route('/fileUpload', methods=['GET', 'POST'])
 def upload_file():
     if request.method == 'POST':
+        s3 = boto3.resource('s3')
+
+        bucket_name = 'origindir'
+        bucket = s3.Bucket(bucket_name)
         obj = g.user.username
         f = request.files['file']
         if f and allowed_file(f.filename):
@@ -140,7 +151,16 @@ def upload_file():
 
         df_info = fff
 
-        df_info.to_csv("/home/ubuntu/projects/FlaskProject/pybo/uploads/" + obj + '.csv')
+        local_file = "/home/ubuntu/projects/FlaskProject/pybo/uploads/" + obj + '.csv'
+        obj_file = str(obj) + '.csv'
+        bucket.upload_file(local_file, obj_file)
+
+        file = "/home/ubuntu/projects/FlaskProject/pybo/uploads/" + obj + ".csv"
+        try:
+            os.remove(file)
+        except OSError:
+            pass
+
         df_info3 = df_info.iloc[0:10]
 
         df_col = []
@@ -161,8 +181,11 @@ def upload_file():
 def partsynth_generate():
     obj = g.user.username
 
-    fff = pd.read_csv("/home/ubuntu/projects/FlaskProject/pybo/uploads/" + obj + '.csv')
-    fff = fff.iloc[:, 1:]
+    s3 = boto3.resource('s3')
+    bucket_name = 'origindir'
+    bucket = s3.Bucket(name=bucket_name)
+    aa = obj + '.csv'
+    fff = pd.read_csv(io.BytesIO(bucket.Object(aa).get()['Body'].read()))
 
     df_col2 = []
 
@@ -193,6 +216,12 @@ def partsynth_generate():
 
     rrf = pd.read_csv("/home/ubuntu/projects/FlaskProject/pybo/uploads/" + obj + '.csv', header=None, skiprows=1,
                       names=columns).astype(dtypes)
+
+    file = "/home/ubuntu/projects/FlaskProject/pybo/uploads/" + obj + ".csv"
+    try:
+        os.remove(file)
+    except OSError:
+        pass
 
     # rrf = rrf.iloc[:,1:]
     # rrf.apply(pd.to_numeric, errors='coerce')
@@ -251,7 +280,6 @@ def syn_store2():
 
 @bp.route('/hello11', methods=['GET', 'POST'])
 def hello11():
-
     obj = g.user.username
     db = pymysql.connect(host="master.ckekx9n1eyul.ap-northeast-2.rds.amazonaws.com", user="admin",
                          passwd="!dldirl7310", db="test", charset="utf8")
@@ -281,8 +309,8 @@ def hello11():
     bucket_name = 'synthdir'
     bucket = s3.Bucket(bucket_name)
     for j in range(0, len(count2)):
-        obj_file = count2[j]+ '.csv'
-        save_file = '/home/ubuntu/projects/FlaskProject/pybo/synth_dir/'+ count2[j] + '.csv'
+        obj_file = count2[j] + '.csv'
+        save_file = '/home/ubuntu/projects/FlaskProject/pybo/synth_dir/' + count2[j] + '.csv'
         bucket.download_file(obj_file, save_file)
 
     for k in range(0, len(count2)):
@@ -299,11 +327,18 @@ def hello11():
 
     return render_template('test.html')
 
+    # return str(list1)
+
+
 index_add_counter = []
 
 
-def add_divide() :
+def syn_down(filename):
+    syn = "/home/ubuntu/projects/FlaskProject/pybo/synth_dir/" + filename + ".csv"
+    return send_file(syn, as_attachment=True)
 
+
+def add_divide():
     global index_add_counter
     index_add_counter.clear()
 
@@ -317,14 +352,17 @@ def add_divide() :
     index_add_counter.append(today.microsecond)
 
 
-
 # 유사도 측정
 @bp.route('/distribution', methods=['GET', 'POST'])
 def distribution():
     obj = g.user.username
-    original_data = pd.read_csv("/home/ubuntu/projects/FlaskProject/pybo/uploads/" + obj + ".csv")
-    original_data = original_data.iloc[:,1:]
-    synth_data = pd.read_csv("/home/ubuntu/projects/FlaskProject/pybo/synth_dir/" + obj +str(index_add_counter) +".csv")
+    s3 = boto3.resource('s3')
+    bucket_name = 'origindir'
+    bucket = s3.Bucket(name=bucket_name)
+    aa = obj + '.csv'
+    original_data = pd.read_csv(io.BytesIO(bucket.Object(aa).get()['Body'].read()))
+
+    synth_data = pd.read_csv("/home/ubuntu/projects/FlaskProject/pybo/synth_dir/" + obj + str(index_add_counter) + ".csv")
     cate_col = []
     for i in range(0, len(original_data.columns)):
         if original_data.dtypes[i] != 'object':
@@ -341,16 +379,21 @@ def distribution():
         plt.savefig('/home/ubuntu/projects/FlaskProject/pybo/static/img_dir/' + obj + 'dis.png')
 
     plt.close()
-    return render_template('distribution.html', image_file='/img_dir/'+ obj + 'dis.png')
+    return render_template('distribution.html', image_file='/img_dir/' + obj + 'dis.png')
 
 
 # 회귀분석 -
 @bp.route('/regression', methods=['GET', 'POST'])
 def regression():
     obj = g.user.username
-    original_data = pd.read_csv("/home/ubuntu/projects/FlaskProject/pybo/uploads/" + obj + ".csv")
-    original_data = original_data.iloc[:, 1:]
-    synth_data = pd.read_csv("/home/ubuntu/projects/FlaskProject/pybo/synth_dir/" + obj +str(index_add_counter) + ".csv")
+
+    s3 = boto3.resource('s3')
+    bucket_name = 'origindir'
+    bucket = s3.Bucket(name=bucket_name)
+    aa = obj + '.csv'
+    original_data = pd.read_csv(io.BytesIO(bucket.Object(aa).get()['Body'].read()))
+
+    synth_data = pd.read_csv("/home/ubuntu/projects/FlaskProject/pybo/synth_dir/" + obj + str(index_add_counter) + ".csv")
     cate_col = []
     for i in range(0, len(original_data.columns)):
         if original_data.dtypes[i] != 'object':
@@ -360,8 +403,8 @@ def regression():
     synth_data = synth_data[cate_col]
     lr = LinearRegression()
     etc = []
-    for i in range(0,  len(cate_col)):
-        if(i ==0 ):
+    for i in range(0, len(cate_col)):
+        if (i == 0):
             standard = cate_col[i]
         else:
             etc.append(cate_col[i])
@@ -385,24 +428,22 @@ def regression():
     list = str(results.summary())
     list2 = str(results2.summary())
 
-
     target_image = Image.open('/home/ubuntu/projects/FlaskProject/pybo/static/img_dir/baseimg.png')
-    draw =ImageDraw.Draw(target_image)
-    font = ImageFont.load_default()
-    draw.text((0,0),list,fill="black",font=font)
+    draw = ImageDraw.Draw(target_image)
+    font = ImageFont.truetype("arial.ttf", 15)
+    draw.text((10, 10), list, fill="black", font=font)
     target_image.save('/home/ubuntu/projects/FlaskProject/pybo/static/img_dir/' + obj + 'originreg.png')
     target_image.close()
 
-
     target_image2 = Image.open('/home/ubuntu/projects/FlaskProject/pybo/static/img_dir/baseimg2.png')
-    font2 = ImageFont.load_default()
+    font2 = ImageFont.truetype("arial.ttf", 15)
     draw2 = ImageDraw.Draw(target_image2)
-    draw2.text((0, 0), list2, fill="black", font=font2)
+    draw2.text((10, 10), list2, fill="black", font=font2)
     target_image2.save('/home/ubuntu/projects/FlaskProject/pybo/static/img_dir/' + obj + 'synthreg.png')
     target_image2.close()
 
-
-    return render_template('regression.html', origin_file='/img_dir/'+ obj + 'originreg.png', synth_file='/img_dir/'+ obj + 'synthreg.png')
+    return render_template('regression.html', origin_file='/img_dir/' + obj + 'originreg.png',
+                           synth_file='/img_dir/' + obj + 'synthreg.png')
 
 
 # 상관관계 분석 - 수치형만
@@ -410,9 +451,15 @@ def regression():
 def correlation():
     obj = g.user.username
     plt.close()
-    original_data = pd.read_csv("/home/ubuntu/projects/FlaskProject/pybo/uploads/" + obj + ".csv")
-    original_data = original_data.iloc[:, 1:]
-    synth_data = pd.read_csv("/home/ubuntu/projects/FlaskProject/pybo/synth_dir/" + obj +str(index_add_counter) + ".csv")
+    # original_data = pd.read_csv("/home/ubuntu/projects/FlaskProject/pybo/uploads/" + obj + ".csv")
+    s3 = boto3.resource('s3')
+    bucket_name = 'origindir'
+    bucket = s3.Bucket(name=bucket_name)
+    aa = obj + '.csv'
+    original_data = pd.read_csv(io.BytesIO(bucket.Object(aa).get()['Body'].read()))
+
+    # original_data = original_data.iloc[:, 1:]
+    synth_data = pd.read_csv("/home/ubuntu/projects/FlaskProject/pybo/synth_dir/" + obj + str(index_add_counter) + ".csv")
     corr_df = original_data.corr()
     corr_df = corr_df.apply(lambda x: round(x, 2))
 
@@ -426,7 +473,8 @@ def correlation():
     plt.savefig('/home/ubuntu/projects/FlaskProject/pybo/static/img_dir/' + obj + 'synthcorr.png')
     plt.close()
 
-    return render_template('correlation.html', synth_file='/img_dir/'+ obj + 'synthcorr.png', origin_file='/img_dir/'+ obj + 'origincorr.png')
+    return render_template('correlation.html', synth_file='/img_dir/' + obj + 'synthcorr.png',
+                           origin_file='/img_dir/' + obj + 'origincorr.png')
 
 
 @bp.route('/syn_store', methods=['GET', 'POST'])
@@ -463,7 +511,6 @@ def syn_store():
     return render_template('syn_store.html', data_list=data_list)
 
 
-
 @bp.route('/hello3')
 def hello_pybo3():
     obj = g.user.username
@@ -489,12 +536,4 @@ def hello_pybo3():
         pass
 
     return send_file(syn, as_attachment=True)
-
-
-
-
-
-
-
-
 
