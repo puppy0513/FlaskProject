@@ -506,8 +506,8 @@ def syn_store():
         os.remove(file)
     except OSError:
         pass
-
-    return render_template('syn_store.html', data_list=data_list)
+    stst = obj + str(index_add_counter)
+    return render_template('syn_store.html', stst = stst)
 
 
 @bp.route('/hello3')
