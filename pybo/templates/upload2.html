@@ -6,45 +6,51 @@
     <meta charset="UTF-8">
     <title>Title</title>
 </head>
-<body>
-    <p>
-         <button type="button" onclick="location.href='/' ">뒤로가기</button>
-    </p>
-   	<div class="container">
-         <h1> 원본데이터 - 앞 10개 행</h1>
+<style>
+    @font-face {
+        font-family: 'BMDOHYEON';
+        src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_one@1.0/BMDOHYEON.woff') format('woff');
+        font-weight: normal;
+        font-style: normal;
+    }
+    .centered { display: table; margin-left: auto; margin-right: auto; }
+</style>
+<body style="background-color:#EBEBE8" ;>
 
-        <form action="\partsynth_generate" method="post" class="input-form">
-    <table>
-	<h4> 변경할 컬럼</h4>
+<div class="container">
+    <h1 style="font-family: 'BMDOHYEON', sans-serif;"> 원본데이터 </h1>
 
-	<tr>
+    <form action="\partsynth_generate" method="post" class="input-form">
+        <table>
+            <h4 style="font-family: 'BMDOHYEON', sans-serif;"> 변경할 컬럼</h4>
 
-<div class="btn-group" role="group" aria-label="Basic checkbox toggle button group">
- {% for key, value in count.items() %}
+            <tr>
 
-  <input type="checkbox" value = {{value}} name={{value}} class="btn-check" id={{key}} autocomplete="off">
-  <label class="btn btn-outline-primary" for={{key}}>{{value}}</label>
+                <div class="btn-group" role="group" aria-label="Basic checkbox toggle button group" style="width:100%">
+                    {% for key, value in count.items() %}
 
-		{% endfor %}
-</div>
-	</tr>
-	<hr>
+                    <input type="checkbox" value={{value}} name={{value}} id={{key}} checked autocomplete="off">
+                    <label class="btn btn-outline-success" for="{{key}}">{{value}}</label>
 
-</table>
-    <table class="table table-dark">
-                <!--Displaying the converted table-->
-                     {% for table in tables %}
-                    {{titles[loop.index]}}
-                    <td>
-                    {{ table|safe }}
-                        </td>
                     {% endfor %}
+                </div>
+            </tr>
+            <hr>
 
         </table>
+        <table class="table" style="background-color:#EBEBE8;">
+            <!--Displaying the converted table-->
+            {% for table in tables %}
+            {{titles[loop.index]}}
+            <td style="background-color:#EBEBE8;">
+                {{ table|safe }}
+            </td>
+            {% endfor %}
+        </table>
 
-    	  <input type="submit" value="다음" class="btn" class="btn" style="background-color:#695784; color:white;">
-</form>
-        <button class="btn btn-secondary" type="button" onclick="location.href='/' ">뒤로가기</button>
+        <input type="submit" value="다음" class="btn" class="btn" style="background-color:#536955; color:white;">
+    </form>
+    <button class="btn btn-secondary" type="button" onclick="location.href='/' ">뒤로가기</button>
 </div>
 </body>
 </html>

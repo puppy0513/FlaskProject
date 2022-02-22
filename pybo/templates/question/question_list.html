@@ -5,9 +5,9 @@
     </div>
     <div class="child1 border-line">
         <div class="container my-3" >
-            <table class="table">
-                <thead>
-                <tr class="thead-dark">
+            <table class="table" >
+                <thead style="background-color:black; color:black;">
+                <tr>
                     <th>번호</th>
                     <th>제목</th>
                     <th>작성일시</th>
@@ -76,7 +76,7 @@
             </ul>
             <!-- 페이징처리 끝 -->
 
-            <a href="{{ url_for('question.create') }}" class="btn btn-primary">질문 등록하기</a>
+            <a href="{{ url_for('question.create') }}" class="btn" style="background-color:#536955; color:white;">질문 등록하기</a>
         </div>
     </div>
     <div class="child2">
