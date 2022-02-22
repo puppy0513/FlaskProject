@@ -72,13 +72,13 @@ def main():
 @login_required
 def render_file():
     obj = g.user.username
-    file = "/home/ubuntu/projects/FlaskProject/pybo/uploads/" + obj + ".csv"
+    file = "pybo/uploads/" + obj + ".csv"
     try:
         os.remove(file)
     except OSError:
         pass
 
-    file2 = "/home/ubuntu/projects/FlaskProject/pybo/uploads/" + obj + ".json"
+    file2 = "pybo/uploads/" + obj + ".json"
     try:
         os.remove(file2)
     except OSError:
@@ -86,7 +86,7 @@ def render_file():
 
     list2 = ['origincorr', 'originreg', 'synthcorr', 'synthreg', 'dis']
     for i in range(0, len(list2)):
-        file3 = "/home/ubuntu/projects/FlaskProject/pybo/static/img_dir/" + obj + list2[i] + ".png"
+        file3 = "pybo/static/img_dir/" + obj + list2[i] + ".png"
         try:
             os.remove(file3)
         except OSError:
@@ -111,13 +111,13 @@ def upload_file():
         obj = g.user.username
         f = request.files['file']
         if f and allowed_file(f.filename):
-            f.save("/home/ubuntu/projects/FlaskProject/pybo/uploads/" + obj + '.csv')
+            f.save("pybo/uploads/" + obj + '.csv')
         else:
             return render_template('extension_error.html')
 
             #  ff = pd.DataFrame(data = f)
-        fff = pd.read_csv("/home/ubuntu/projects/FlaskProject/pybo/uploads/" + obj + '.csv')
-        asd = pd.read_csv("/home/ubuntu/projects/FlaskProject/pybo/uploads/" + obj + '.csv')
+        fff = pd.read_csv("pybo/uploads/" + obj + '.csv')
+        asd = pd.read_csv("pybo/uploads/" + obj + '.csv')
         cate_col = []
         for i in range(0, len(fff.columns)):
             if fff.dtypes[i] != 'object':
@@ -151,11 +151,11 @@ def upload_file():
 
         df_info = fff
 
-        local_file = "/home/ubuntu/projects/FlaskProject/pybo/uploads/" + obj + '.csv'
+        local_file = "pybo/uploads/" + obj + '.csv'
         obj_file = str(obj) + '.csv'
         bucket.upload_file(local_file, obj_file)
 
-        file = "/home/ubuntu/projects/FlaskProject/pybo/uploads/" + obj + ".csv"
+        file = "pybo/uploads/" + obj + ".csv"
         try:
             os.remove(file)
         except OSError:
@@ -204,20 +204,20 @@ def partsynth_generate():
     # 이렇게 dict로 주지 않으면 list형식으로 들어감 ;
     for i in range(1, len(fff.columns)):
         to_json[df_col2[i]] = df_type2[i]
-    with open("/home/ubuntu/projects/FlaskProject/pybo/uploads/" + obj + ".json", 'w') as f:
+    with open("pybo/uploads/" + obj + ".json", 'w') as f:
         json.dump(to_json, f)
 
-    # df = pd.read_csv("/home/ubuntu/projects/FlaskProject/pybo/uploads/" + obj + ".csv")
-    with open("/home/ubuntu/projects/FlaskProject/pybo/uploads/" + obj + ".json", 'r') as f:
+    # df = pd.read_csv("pybo/uploads/" + obj + ".csv")
+    with open("pybo/uploads/" + obj + ".json", 'r') as f:
         dtypes = json.load(f)
     columns = list(dtypes.keys())
 
-    fff.to_csv("/home/ubuntu/projects/FlaskProject/pybo/uploads/" + obj + '.csv')
+    fff.to_csv("pybo/uploads/" + obj + '.csv')
 
-    rrf = pd.read_csv("/home/ubuntu/projects/FlaskProject/pybo/uploads/" + obj + '.csv', header=None, skiprows=1,
+    rrf = pd.read_csv("pybo/uploads/" + obj + '.csv', header=None, skiprows=1,
                       names=columns).astype(dtypes)
 
-    file = "/home/ubuntu/projects/FlaskProject/pybo/uploads/" + obj + ".csv"
+    file = "pybo/uploads/" + obj + ".csv"
     try:
         os.remove(file)
     except OSError:
@@ -249,7 +249,7 @@ def partsynth_generate():
 
     df = fff.iloc[:10]
     result2 = result.iloc[:10]
-    result.to_csv("/home/ubuntu/projects/FlaskProject/pybo/synth_dir/" + obj + str(index_add_counter) + ".csv", index=False)
+    result.to_csv("pybo/synth_dir/" + obj + str(index_add_counter) + ".csv", index=False)
 
     return render_template('partsynth_generate.html', tables=[df.to_html()], titles=[''], tables2=[result2.to_html()],
                            titles2=[''])
@@ -310,16 +310,16 @@ def hello11():
     bucket = s3.Bucket(bucket_name)
     for j in range(0, len(count2)):
         obj_file = count2[j] + '.csv'
-        save_file = '/home/ubuntu/projects/FlaskProject/pybo/synth_dir/' + count2[j] + '.csv'
+        save_file = 'pybo/synth_dir/' + count2[j] + '.csv'
         bucket.download_file(obj_file, save_file)
 
     for k in range(0, len(count2)):
-        syn = "/home/ubuntu/projects/FlaskProject/pybo/synth_dir/" + str(count2[0]) + ".csv"
+        syn = "pybo/synth_dir/" + str(count2[0]) + ".csv"
         result = send_file(syn, as_attachment=True)
         return result
 
     for l in range(0, len(count2)):
-        file = "/home/ubuntu/projects/FlaskProject/pybo/uploads/" + count2[l] + ".csv"
+        file = "pybo/uploads/" + count2[l] + ".csv"
         try:
             os.remove(file)
         except OSError:
@@ -334,7 +334,7 @@ index_add_counter = []
 
 
 def syn_down(filename):
-    syn = "/home/ubuntu/projects/FlaskProject/pybo/synth_dir/" + filename + ".csv"
+    syn = "pybo/synth_dir/" + filename + ".csv"
     return send_file(syn, as_attachment=True)
 
 
@@ -362,7 +362,7 @@ def distribution():
     aa = obj + '.csv'
     original_data = pd.read_csv(io.BytesIO(bucket.Object(aa).get()['Body'].read()))
 
-    synth_data = pd.read_csv("/home/ubuntu/projects/FlaskProject/pybo/synth_dir/" + obj + str(index_add_counter) + ".csv")
+    synth_data = pd.read_csv("pybo/synth_dir/" + obj + str(index_add_counter) + ".csv")
     cate_col = []
     for i in range(0, len(original_data.columns)):
         if original_data.dtypes[i] != 'object':
@@ -376,7 +376,7 @@ def distribution():
         plt.hist(original_data[cate_col[i]], alpha=0.3)
         plt.title(cate_col[i])
         plt.legend(['synth', 'origin'])
-        plt.savefig('/home/ubuntu/projects/FlaskProject/pybo/static/img_dir/' + obj + 'dis.png')
+        plt.savefig('pybo/static/img_dir/' + obj + 'dis.png')
 
     plt.close()
     return render_template('distribution.html', image_file='/img_dir/' + obj + 'dis.png')
@@ -393,7 +393,7 @@ def regression():
     aa = obj + '.csv'
     original_data = pd.read_csv(io.BytesIO(bucket.Object(aa).get()['Body'].read()))
 
-    synth_data = pd.read_csv("/home/ubuntu/projects/FlaskProject/pybo/synth_dir/" + obj + str(index_add_counter) + ".csv")
+    synth_data = pd.read_csv("pybo/synth_dir/" + obj + str(index_add_counter) + ".csv")
     cate_col = []
     for i in range(0, len(original_data.columns)):
         if original_data.dtypes[i] != 'object':
@@ -428,18 +428,18 @@ def regression():
     list = str(results.summary())
     list2 = str(results2.summary())
 
-    target_image = Image.open('/home/ubuntu/projects/FlaskProject/pybo/static/img_dir/baseimg.png')
+    target_image = Image.open('pybo/static/img_dir/baseimg.png')
     draw = ImageDraw.Draw(target_image)
     font = ImageFont.truetype("arial.ttf", 15)
     draw.text((10, 10), list, fill="black", font=font)
-    target_image.save('/home/ubuntu/projects/FlaskProject/pybo/static/img_dir/' + obj + 'originreg.png')
+    target_image.save('pybo/static/img_dir/' + obj + 'originreg.png')
     target_image.close()
 
-    target_image2 = Image.open('/home/ubuntu/projects/FlaskProject/pybo/static/img_dir/baseimg2.png')
+    target_image2 = Image.open('pybo/static/img_dir/baseimg2.png')
     font2 = ImageFont.truetype("arial.ttf", 15)
     draw2 = ImageDraw.Draw(target_image2)
     draw2.text((10, 10), list2, fill="black", font=font2)
-    target_image2.save('/home/ubuntu/projects/FlaskProject/pybo/static/img_dir/' + obj + 'synthreg.png')
+    target_image2.save('pybo/static/img_dir/' + obj + 'synthreg.png')
     target_image2.close()
 
     return render_template('regression.html', origin_file='/img_dir/' + obj + 'originreg.png',
@@ -451,7 +451,7 @@ def regression():
 def correlation():
     obj = g.user.username
     plt.close()
-    # original_data = pd.read_csv("/home/ubuntu/projects/FlaskProject/pybo/uploads/" + obj + ".csv")
+    # original_data = pd.read_csv("pybo/uploads/" + obj + ".csv")
     s3 = boto3.resource('s3')
     bucket_name = 'origindir'
     bucket = s3.Bucket(name=bucket_name)
@@ -459,18 +459,18 @@ def correlation():
     original_data = pd.read_csv(io.BytesIO(bucket.Object(aa).get()['Body'].read()))
 
     # original_data = original_data.iloc[:, 1:]
-    synth_data = pd.read_csv("/home/ubuntu/projects/FlaskProject/pybo/synth_dir/" + obj + str(index_add_counter) + ".csv")
+    synth_data = pd.read_csv("pybo/synth_dir/" + obj + str(index_add_counter) + ".csv")
     corr_df = original_data.corr()
     corr_df = corr_df.apply(lambda x: round(x, 2))
 
     ax = sns.heatmap(corr_df, annot=True, annot_kws=dict(color='g'), cmap='Greys')
-    plt.savefig('/home/ubuntu/projects/FlaskProject/pybo/static/img_dir/' + obj + 'origincorr.png')
+    plt.savefig('pybo/static/img_dir/' + obj + 'origincorr.png')
     plt.close()
     corr_df2 = synth_data.corr()
     corr_df2 = corr_df2.apply(lambda x: round(x, 2))
 
     ax2 = sns.heatmap(corr_df2, annot=True, annot_kws=dict(color='g'), cmap='Greys')
-    plt.savefig('/home/ubuntu/projects/FlaskProject/pybo/static/img_dir/' + obj + 'synthcorr.png')
+    plt.savefig('pybo/static/img_dir/' + obj + 'synthcorr.png')
     plt.close()
 
     return render_template('correlation.html', synth_file='/img_dir/' + obj + 'synthcorr.png',
@@ -498,11 +498,11 @@ def syn_store():
     bucket_name = 'synthdir'
     bucket = s3.Bucket(bucket_name)
 
-    local_file = "/home/ubuntu/projects/FlaskProject/pybo/synth_dir/" + obj + str(index_add_counter) + ".csv"
+    local_file = "pybo/synth_dir/" + obj + str(index_add_counter) + ".csv"
     obj_file = obj + str(index_add_counter) + '.csv'
     bucket.upload_file(local_file, obj_file)
 
-    file = "/home/ubuntu/projects/FlaskProject/pybo/synth_dir/" + obj + str(index_add_counter) + ".csv"
+    file = "pybo/synth_dir/" + obj + str(index_add_counter) + ".csv"
     try:
         os.remove(file)
     except OSError:
@@ -515,21 +515,21 @@ def syn_store():
 def hello_pybo3():
     obj = g.user.username
 
-    file = "/home/ubuntu/projects/FlaskProject/pybo/uploads/" + obj + ".csv"
+    file = "pybo/uploads/" + obj + ".csv"
     try:
         os.remove(file)
     except OSError:
         pass
 
-    syn = "/home/ubuntu/projects/FlaskProject/pybo/synth_dir/" + obj + str(index_add_counter) + ".csv"
+    syn = "pybo/synth_dir/" + obj + str(index_add_counter) + ".csv"
 
-    file2 = "/home/ubuntu/projects/FlaskProject/pybo/uploads/" + obj + ".json"
+    file2 = "pybo/uploads/" + obj + ".json"
     try:
         os.remove(file2)
     except OSError:
         pass
 
-    file3 = "/home/ubuntu/projects/FlaskProject/pybo/uploads/" + obj + "%.png"
+    file3 = "pybo/uploads/" + obj + "%.png"
     try:
         os.remove(file3)
     except OSError:
