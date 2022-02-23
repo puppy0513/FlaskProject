@@ -103,7 +103,6 @@ def allowed_file(filename):
 def upload_file():
         obj = g.user.username
 
-
             #  ff = pd.DataFrame(data = f)
         fff = pd.read_csv("/home/ubuntu/projects/FlaskProject/pybo/uploads/" + obj + '.csv')
         cate_col = []
