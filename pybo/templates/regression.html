@@ -5,8 +5,36 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
+    <style>
+    @keyframes blink-effect {
+  50% {
+    opacity: 0;
+  }
+}
+
+.blink {
+  animation: blink-effect 1s step-end infinite;
+
+
+  /*
+  animation-name: blink-effect;
+  animation-duration: 1s;
+  animation-iteration-count:infinite;
+  animation-timing-function:step-end;
+  */
+}
+
+</style>
 </head>
 <body>
+<div class="container">
+ <table>
+            <td border="1" solid=#000> 1. 데이터 정제 및 컬럼 선택</td>
+            <td  border="1" solid=#000>   2. 재현데이터 생성</td>
+            <td    border="1" solid=#000>   3. 데이터 시각화</td>
+            <td  class="blink" border="1" solid=#000>   4. 다운로드 및 내역저장</td>
+            </table>
+</div>
 <h1>Regression</h1>
 <div>
     <img src="{{  url_for('static', filename = origin_file) }}">
