@@ -99,25 +99,18 @@ def allowed_file(filename):
            filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
 
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 3edb9076312a1daa6f1a4cec66a9f7dbebcc6c1e
 # 파일 업로드 처리
 @bp.route('/fileUpload', methods=['GET', 'POST'])
 def upload_file():
-    if request.method == 'POST':
-        s3 = boto3.resource('s3')
-
-        bucket_name = 'origindir'
-        bucket = s3.Bucket(bucket_name)
         obj = g.user.username
-        f = request.files['file']
-        if f and allowed_file(f.filename):
-            f.save("/home/ubuntu/projects/FlaskProject/pybo/uploads/" + obj + '.csv')
-        else:
-            return render_template('extension_error.html')
+
 
             #  ff = pd.DataFrame(data = f)
         fff = pd.read_csv("/home/ubuntu/projects/FlaskProject/pybo/uploads/" + obj + '.csv')
-        asd = pd.read_csv("/home/ubuntu/projects/FlaskProject/pybo/uploads/" + obj + '.csv')
         cate_col = []
         for i in range(0, len(fff.columns)):
             if fff.dtypes[i] != 'object':
@@ -151,16 +144,6 @@ def upload_file():
 
         df_info = fff
 
-        local_file = "/home/ubuntu/projects/FlaskProject/pybo/uploads/" + obj + '.csv'
-        obj_file = str(obj) + '.csv'
-        bucket.upload_file(local_file, obj_file)
-
-        file = "/home/ubuntu/projects/FlaskProject/pybo/uploads/" + obj + ".csv"
-        try:
-            os.remove(file)
-        except OSError:
-            pass
-
         df_info3 = df_info.iloc[0:10]
 
         df_col = []
@@ -172,8 +155,21 @@ def upload_file():
         for i in range(0, len(df_col)):
             count[i] = df_col[i]
 
-        return render_template('upload2.html', tables=[df_info3.to_html()], titles=[''], count=count,
-                               refine_shape=df_info.shape, origin_shape=asd.shape)
+        s3 = boto3.resource('s3')
+        bucket_name = 'origindir'
+        bucket = s3.Bucket(name=bucket_name)
+
+        local_file = "/home/ubuntu/projects/FlaskProject/pybo/uploads/" + obj + '.csv'
+        obj_file = str(obj) + '.csv'
+        bucket.upload_file(local_file, obj_file)
+
+        file = "/home/ubuntu/projects/FlaskProject/pybo/uploads/" + obj + ".csv"
+        try:
+            os.remove(file)
+        except OSError:
+            pass
+
+        return render_template('upload2.html', tables=[df_info3.to_html()], titles=[''], count=count)
 
 
 # json 생성 및 재현데이터 생성
@@ -430,13 +426,13 @@ def regression():
 
     target_image = Image.open('/home/ubuntu/projects/FlaskProject/pybo/static/img_dir/baseimg.png')
     draw = ImageDraw.Draw(target_image)
-    font = ImageFont.truetype("arial.ttf", 15)
+    font = ImageFont.load_default()
     draw.text((10, 10), list, fill="black", font=font)
     target_image.save('/home/ubuntu/projects/FlaskProject/pybo/static/img_dir/' + obj + 'originreg.png')
     target_image.close()
 
     target_image2 = Image.open('/home/ubuntu/projects/FlaskProject/pybo/static/img_dir/baseimg2.png')
-    font2 = ImageFont.truetype("arial.ttf", 15)
+    font2 = ImageFont.load_default()
     draw2 = ImageDraw.Draw(target_image2)
     draw2.text((10, 10), list2, fill="black", font=font2)
     target_image2.save('/home/ubuntu/projects/FlaskProject/pybo/static/img_dir/' + obj + 'synthreg.png')
@@ -507,8 +503,8 @@ def syn_store():
         os.remove(file)
     except OSError:
         pass
-
-    return render_template('syn_store.html', data_list=data_list)
+    stst = obj + str(index_add_counter)
+    return render_template('syn_store.html', stst = stst)
 
 
 @bp.route('/hello3')
@@ -537,3 +533,40 @@ def hello_pybo3():
 
     return send_file(syn, as_attachment=True)
 
+
+import urllib.parse
+
+
+def convert(input):
+    # Converts unicode to string
+    if isinstance(input, dict):
+        return {convert(key): convert(value) for key, value in input.iteritems()}
+    elif isinstance(input, list):
+        return [convert(element) for element in input]
+    elif isinstance(input, str):
+        return input.encode('utf-8')
+    else:
+        return input
+
+@bp.route("/target_endpoint", methods = ['GET', 'POST'])
+def target():
+    if request.method == 'POST':
+        # You could do any information passing here if you want (i.e Post or Get request)
+        some_data = "Here's some example data"
+        some_data = urllib.parse.quote(
+            convert(some_data))  # urllib2 is used if you have fancy characters in your data like "+"," ", or "="
+        # This is where the loading screen will be.
+        # ( You don't have to pass data if you want, but if you do, make sure you have a matching variable in the html i.e {{my_data}} )
+        s3 = boto3.resource('s3')
+
+        bucket_name = 'origindir'
+        bucket = s3.Bucket(bucket_name)
+        obj = g.user.username
+        f = request.files['file']
+        if f and allowed_file(f.filename):
+            f.save("/home/ubuntu/projects/FlaskProject/pybo/uploads/" + obj + '.csv')
+        else:
+            return render_template('extension_error.html')
+
+
+        return render_template('loading.html', my_data = some_data)
