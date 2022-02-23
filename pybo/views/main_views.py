@@ -98,13 +98,10 @@ def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
 
-
-
 # 파일 업로드 처리
 @bp.route('/fileUpload', methods=['GET', 'POST'])
 def upload_file():
         obj = g.user.username
-
 
             #  ff = pd.DataFrame(data = f)
         fff = pd.read_csv("/home/ubuntu/projects/FlaskProject/pybo/uploads/" + obj + '.csv')
