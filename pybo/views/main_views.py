@@ -98,11 +98,6 @@ def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
 
-
-<<<<<<< HEAD
-
-=======
->>>>>>> 3edb9076312a1daa6f1a4cec66a9f7dbebcc6c1e
 # 파일 업로드 처리
 @bp.route('/fileUpload', methods=['GET', 'POST'])
 def upload_file():
