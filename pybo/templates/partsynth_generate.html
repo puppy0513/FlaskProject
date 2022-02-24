@@ -32,16 +32,27 @@
   animation-timing-function:step-end;
   */
 }
-
+@import url(https://cdn.rawgit.com/moonspam/NanumSquare/master/nanumsquare.css);
+    body        { font-family: 'NanumSquare', sans-serif; }
+    .normal     { font-weight: 400 }
+    .bold       { font-weight: 700 }
+    .bolder     { font-weight: 800 }
+    .light      { font-weight: 300 }
 </style>
 <body  style="background-color:#EBEBE8;">
 <div class="container">
-    <table>
-            <td  border="1" solid=#000> 1. 데이터 정제 및 컬럼 선택</td>
-            <td  class="blink" border="1" solid=#000>   2. 재현데이터 생성</td>
-            <td  border="1" solid=#000>   3. 데이터 시각화</td>
-            <td  border="1" solid=#000>   4. 다운로드 및 내역저장</td>
-            </table>
+    <div style="display:block; padding-left:18%;">
+        <table>
+            <td border="1" class="bolder" > 데이터 정제 및 컬럼 선택</td>
+            <td border="1">ꞏꞏꞏꞏꞏꞏꞏꞏꞏꞏ</td>
+            <td border="1" class="bolder" style="color:#4ea656;"> 재현데이터 생성</td>
+            <td border="1">ꞏꞏꞏꞏꞏꞏꞏꞏꞏꞏ</td>
+            <td border="1" class="bolder"> 데이터시각화 및 회귀분석</td>
+            <td border="1">ꞏꞏꞏꞏꞏꞏꞏꞏꞏꞏ</td>
+            <td border="1" class="bolder"> 다운로드 및 내역저장</td>
+        </table>
+    </div>
+    <hr>
             <!-- Content here -->
             <h1 style="font-family: 'BMDOHYEON', sans-serif;"> 재현데이터</h1>
             <table class="table" style="background-color:#EBEBE8;">
@@ -54,13 +65,10 @@
             {% endfor %}
         </table>
         </div>
-<div class="parent">
-    <div class="child2"></div>
+<div class="container">
     <div class="child1">
-
         <a href="{{ url_for('main.distribution') }}" class="btn" style="background-color:#536955; color:white;">다음</a>
     </div>
-    <div class="child2"></div>
 </div>
 </body>
 </html>

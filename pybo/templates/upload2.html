@@ -16,33 +16,46 @@
     .centered { display: table; margin-left: auto; margin-right: auto; }
 
     @keyframes blink-effect {
-  50% {
-    opacity: 0;
-  }
-}
+      50% {
+        opacity: 0;
+      }
+    }
+    .paint{
+        color :
+    }
 
-.blink {
-  animation: blink-effect 1s step-end infinite;
+    .position {
+        position: absolute;
+        left:30%;
+    }
 
-
-  /*
-  animation-name: blink-effect;
-  animation-duration: 1s;
-  animation-iteration-count:infinite;
-  animation-timing-function:step-end;
-  */
-}
+    @import url(https://cdn.rawgit.com/moonspam/NanumSquare/master/nanumsquare.css);
+    body        { font-family: 'NanumSquare', sans-serif; }
+    .normal     { font-weight: 400 }
+    .bold       { font-weight: 700 }
+    .bolder     { font-weight: 800 }
+    .light      { font-weight: 300 }
 </style>
 <body style="background-color:#EBEBE8" ;>
 
 <div class="container">
-     <table>
-            <td class="blink" border="1" solid=#000> 1. 데이터 정제 및 컬럼 선택</td>
-            <td  border="1" solid=#000>   2. 재현데이터 생성</td>
-            <td  border="1" solid=#000>   3. 데이터 시각화</td>
-            <td  border="1" solid=#000>   4. 다운로드 및 내역저장</td>
-            </table>
+    <div style="display:block; padding-left:18%;">
+        <table>
+            <td border="1" class="bolder" style="color:#4ea656;"> 데이터 정제 및 컬럼 선택</td>
+            <td border="1">ꞏꞏꞏꞏꞏꞏꞏꞏꞏꞏ</td>
+            <td border="1" class="bolder"> 재현데이터 생성</td>
+            <td border="1">ꞏꞏꞏꞏꞏꞏꞏꞏꞏꞏ</td>
+            <td border="1" class="bolder"> 데이터시각화 및 회귀분석</td>
+            <td border="1">ꞏꞏꞏꞏꞏꞏꞏꞏꞏꞏ</td>
+            <td border="1" class="bolder"> 다운로드 및 내역저장</td>
+        </table>
+    </div>
+
+    <hr>
+
     <h1 style="font-family: 'BMDOHYEON', sans-serif;"> 원본데이터 </h1>
+
+    <hr>
 
     <form action="\partsynth_generate" method="post" class="input-form">
         <table>
@@ -72,9 +85,13 @@
             {% endfor %}
         </table>
 
-        <input type="submit" value="다음" class="btn" class="btn" style="background-color:#536955; color:white; font-family: 'BMDOHYEON', sans-serif; width:198px; height:42px;">
+        <input type="submit" value="다음" class="btn" class="btn"
+               style="background-color:#536955; color:white; font-family: 'BMDOHYEON', sans-serif; width:198px; height:42px;">
     </form>
-    <button class="btn btn-secondary" type="button" onclick="location.href='/'" style="font-family: 'BMDOHYEON', sans-serif; width:198px; height:42px;">뒤로가기</button>
+    <hr>
+    <button class="btn btn-secondary" type="button" onclick="location.href='/'"
+            style="font-family: 'BMDOHYEON', sans-serif; width:198px; height:42px; margin-top:10px;" >뒤로가기
+    </button>
 </div>
 </body>
 </html>
