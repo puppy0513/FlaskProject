@@ -943,8 +943,8 @@ def risk3():
     bucket_name = 'origindir'
     bucket = s3.Bucket(name=bucket_name)
     aa = obj + '.csv'
-    synth_data = pd.read_csv("C:/finalproject/myproject/pybo/synth_dir/" + obj + str(index_add_counter) + ".csv")
-    # synth_data = pd.read_csv("C:/finalproject/myproject/pybo/synth_dir/" + obj + str(index_add_counter) + ".csv")
+    synth_data = pd.read_csv("/home/ubuntu/projects/FlaskProject/pybo/synth_dir/" + obj + str(index_add_counter) + ".csv")
+    # synth_data = pd.read_csv("/home/ubuntu/projects/FlaskProject/pybo/synth_dir/" + obj + str(index_add_counter) + ".csv")
     original_data = pd.read_csv(io.BytesIO(bucket.Object(aa).get()['Body'].read()))
 
     cate_col = []
@@ -990,7 +990,7 @@ def risk3():
     # Let's see how t-closeness fares
     dft.sort_values([column_x, column_y, sensitive_column])
     # print(dft)
-    dft.to_csv('C:/finalproject/myproject/pybo/uploads/origin_dft' + obj + '.csv', index=False)
+    dft.to_csv('/home/ubuntu/projects/FlaskProject/pybo/uploads/origin_dft' + obj + '.csv', index=False)
 
     # --------------------------------------- 위에가 원본 T근접성 구하기----------------
 
@@ -1022,7 +1022,7 @@ def risk3():
     # Let's see how t-closeness fares
     dft.sort_values([column_x, column_y, sensitive_column])
     # print(dft)
-    dft.to_csv('C:/finalproject/myproject/pybo/uploads/synth_dft' + obj + '.csv', index=False)
+    dft.to_csv('/home/ubuntu/projects/FlaskProject/pybo/uploads/synth_dft' + obj + '.csv', index=False)
 
     # --------------------- 여기까지 재현 T근접성---------------------------
 
@@ -1039,7 +1039,7 @@ def risk3():
     origin_identifier = np.array(original_data)
     synth_identifier = np.array(synth_data)
 
-    vali = pd.read_csv('C:/finalproject/myproject/pybo/uploads/origin_dft' + obj + '.csv')
+    vali = pd.read_csv('/home/ubuntu/projects/FlaskProject/pybo/uploads/origin_dft' + obj + '.csv')
 
     # col = ['age','count']
     col = [aa, 'count']
@@ -1070,7 +1070,7 @@ def risk3():
     )
     # print('원본 : ' + str(EMD_values))
 
-    vali2 = pd.read_csv('C:/finalproject/myproject/pybo/uploads/synth_dft' + obj + '.csv')
+    vali2 = pd.read_csv('/home/ubuntu/projects/FlaskProject/pybo/uploads/synth_dft' + obj + '.csv')
 
     # col = ['age','count']
     col = [aa, 'count']
