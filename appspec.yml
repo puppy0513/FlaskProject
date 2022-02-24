@@ -2,9 +2,9 @@ version: 0.0
 os: linux
 files:
   - source:  /
-    destination: /home/ubuntu/projects/myproject
+    destination: /home/ubuntu/projects/FlaskProject
 permissions:
-  - object: /home/ubuntu/projects/myproject
+  - object: /home/ubuntu/projects/FlaskProject
     pattern: "*"
     owner: root
     mode: 777
