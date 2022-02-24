@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div class="container">
+        <form action="\target_endpoint2" method="post" class="input-form">
+    <table>
+
+	<h4> 주식별자 선택</h4>
+
+
+
+<div class="btn-group" role="group" aria-label="Basic checkbox toggle button group">
+    	<tr>
+ {% for key, value in count.items() %}
+
+  <input type="checkbox" value = {{value}} name={{value}} class="btn-check" id={{key}} autocomplete="off">
+  <label class="btn btn-outline-primary" for={{key}}>{{value}}</label>
+
+		{% endfor %}
+
+	</tr>
+	<hr>
+
+</div>
+        </tr>
+</table>
+            <input type="submit" value="다음" class="btn" class="btn" style="background-color:#695784; color:white;">
+        </form>
+            <button class="btn btn-secondary" type="button" onclick="location.href='/' ">뒤로가기</button>
+</div>
+</body>
+</html>
+
+
+{% endblock %}
+

@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div class="container">
+    <p>원본데이터 EMD 값 : {{origin}}</p>
+    <p>재현데이터 EMD 값 : {{synth}}</p>
+
+
+
+    <a href="{{ url_for('main.render_file') }}" class="btn btn-primary" >돌아가기</a>
+</div>
+</body>
+</html>
+
+
+{% endblock %}

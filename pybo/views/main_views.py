@@ -12,7 +12,7 @@ from warnings import simplefilter
 
 simplefilter(action="ignore", category=pd.errors.PerformanceWarning)
 import matplotlib
-
+import pyemd
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import seaborn as sns
@@ -34,6 +34,7 @@ import pymysql
 import datetime
 import boto3
 import io
+import matplotlib.patches as patches
 
 bp = Blueprint('main', __name__, url_prefix='/')
 app = Flask(__name__)
@@ -564,3 +565,540 @@ def target():
 
 
         return render_template('loading.html', my_data = some_data)
+
+
+@bp.route('/risk', methods=['GET', 'POST'])
+def risk():
+    obj = g.user.username
+    s3 = boto3.resource('s3')
+    bucket_name = 'origindir'
+    bucket = s3.Bucket(name=bucket_name)
+    aa = obj + '.csv'
+    fff = pd.read_csv(io.BytesIO(bucket.Object(aa).get()['Body'].read()))
+
+    df_col = []
+
+    for i in range(0, len(fff.columns)):
+        if fff.dtypes[i] == 'object':
+            df_col.append(fff.columns[i])
+
+    count = {}
+    for i in range(0, len(df_col)):
+        count[i] = df_col[i]
+
+    return render_template('risk.html', count=count)
+
+
+risk_category = []
+
+
+@bp.route('/risk2', methods=['GET', 'POST'])
+def risk2():
+    obj = g.user.username
+    s3 = boto3.resource('s3')
+    bucket_name = 'origindir'
+    bucket = s3.Bucket(name=bucket_name)
+    aa = obj + '.csv'
+    fff = pd.read_csv(io.BytesIO(bucket.Object(aa).get()['Body'].read()))
+
+    df_col = []
+
+    for i in range(0, len(fff.columns)):
+        if fff.dtypes[i] != 'object':
+            df_col.append(fff.columns[i])
+
+    count = {}
+    for i in range(0, len(df_col)):
+        count[i] = df_col[i]
+
+    list1 = []
+    if request.method == 'POST':
+        for i in range(0, len(fff.columns)):
+            list1.append(request.form.get(fff.columns[i]))
+    list2 = list(filter(None.__ne__, list1))
+    risk_category.append(list2)
+
+    return render_template('risk2.html', count=count)
+
+
+risk_num = []
+
+
+@bp.route("/target_endpoint2", methods=['GET', 'POST'])
+def target2():
+    obj = g.user.username
+    s3 = boto3.resource('s3')
+    bucket_name = 'origindir'
+    bucket = s3.Bucket(name=bucket_name)
+    aa = obj + '.csv'
+    fff = pd.read_csv(io.BytesIO(bucket.Object(aa).get()['Body'].read()))
+
+    list3 = []
+    if request.method == 'POST':
+        for i in range(0, len(fff.columns)):
+            list3.append(request.form.get(fff.columns[i]))
+    list4 = list(filter(None.__ne__, list3))
+    risk_num.append(list4)
+
+    # You could do any information passing here if you want (i.e Post or Get request)
+    some_data = "Here's some example data"
+    some_data = urllib.parse.quote(
+        convert(some_data))  # urllib2 is used if you have fancy characters in your data like "+"," ", or "="
+    # This is where the loading screen will be.
+    # ( You don't have to pass data if you want, but if you do, make sure you have a matching variable in the html i.e {{my_data}} )
+
+    return render_template('loading2.html', my_data=some_data)
+
+
+@bp.route('/risk3', methods=['GET', 'POST'])
+def risk3():
+    # -------------------------------------- 여기부터는 T근접성 함수------------------------------------
+
+    '''
+    데이터 프레임의 파티션에 대해 모든 열의 스팬
+    (숫자 열의 경우 max-min, 범주형 열의 경우 서로 다른 값의 수)을
+    반환하는 함수를 구현합니다.
+    '''
+
+    def get_spans(df, partition, scale=None):
+        """
+        :param        df: the dataframe for which to calculate the spans
+        :param partition: the partition for which to calculate the spans
+        :param     scale: if given, the spans of each column will be divided
+                          by the value in `scale` for that column
+        :        returns: The spans of all columns in the partition
+        """
+        spans = {}
+        for column in df.columns:
+            if column in cate_col:
+                span = len(df[column][partition].unique())
+            else:
+                span = df[column][partition].max() - df[column][partition].min()
+            if scale is not None:
+                span = span / scale[column]
+            spans[column] = span
+        return spans
+
+    # print('모든 열에 대한 빈도 수 구하기')
+    # print(full_spans)
+
+    '''
+    데이터 프레임, 파티션 및 열을 사용하고 지정된 파티션 두 개를 반환하는 
+    분할 함수를 구현하여 열 값이 중위수보다 크거나 같은 모든 행이 
+    다른 파티션에 있도록 합니다.
+    '''
+
+    def split(df, partition, column):
+        """
+        :param        df: The dataframe to split
+        :param partition: The partition to split
+        :param    column: The column along which to split
+        :        returns: A tuple containing a split of the original partition
+        """
+        dfp = df[column][partition]
+        if column in cate_col:
+            values = dfp.unique()
+            lv = set(values[:len(values) // 2])
+            rv = set(values[len(values) // 2:])
+            return dfp.index[dfp.isin(lv)], dfp.index[dfp.isin(rv)]
+        else:
+            median = dfp.median()
+            dfl = dfp.index[dfp < median]
+            dfr = dfp.index[dfp >= median]
+            return (dfl, dfr)
+
+    '''
+    이제 모든 도우미 함수가 적용되었으므로 위에서 설명한 파티션 알고리즘을 구현할 수 있습니다.
+    위에서 설명한 파티션 알고리즘을 생성하는 파티션에 대해 k-익명 기준을 사용하여 구현합니다.
+    '''
+
+    def is_k_anonymous(df, partition, sensitive_column, k=3):
+        """
+        :param               df: The dataframe on which to check the partition.
+        :param        partition: The partition of the dataframe to check.
+        :param sensitive_column: The name of the sensitive column
+        :param                k: The desired k
+        :returns               : True if the partition is valid according to our k-anonymity criteria, False otherwise.
+        """
+        if len(partition) < k:
+            return False
+        return True
+
+    def partition_dataset(df, feature_columns, sensitive_column, scale, is_valid):
+        """
+        :param               df: The dataframe to be partitioned.
+        :param  feature_columns: A list of column names along which to partition the dataset.
+        :param sensitive_column: The name of the sensitive column (to be passed on to the `is_valid` function)
+        :param            scale: The column spans as generated before.
+        :param         is_valid: A function that takes a dataframe and a partition and returns True if the partition is valid.
+        :returns               : A list of valid partitions that cover the entire dataframe.
+        """
+        finished_partitions = []
+        partitions = [df.index]
+        while partitions:
+            partition = partitions.pop(0)
+            spans = get_spans(df[feature_columns], partition, scale)
+            for column, span in sorted(spans.items(), key=lambda x: -x[1]):
+                lp, rp = split(df, partition, column)
+                if not is_valid(df, lp, sensitive_column) or not is_valid(df, rp, sensitive_column):
+                    continue
+                partitions.extend((lp, rp))
+                break
+            else:
+                finished_partitions.append(partition)
+        return finished_partitions
+
+    '''
+    단순하게 유지하기 위해 먼저 분할을 적용할 데이터 집합에서 열을 두 개만 선택합니다. 
+    따라서 결과를 쉽게 확인/시각화하고 실행 속도를 높일 수 있습니다
+    (전체 데이터 세트에서 실행할 경우 간단한 알고리즘이 몇 분 정도 걸릴 수 있음).
+    '''
+
+    # 우리는 "gender"을 민감한(sensitive) 속성으로 사용하여 데이터셋의 두 열에
+    # 분할 방법을 적용한다.
+
+    # 생성된 파티션 수를 가져옵니다.
+
+    # print('생성된 파티션 수를 가져옵니다.')
+    # print(len(finished_partitions))
+
+    '''
+    생성된 파티션을 시각화해 보겠습니다! 
+    이를 위해 두 열을 따라 파티션의 직사각형 경계를 구하는 함수를 작성할 것입니다. 
+    그런 다음 이러한 직장을 그래프로 표시하여 분할 함수가 데이터 집합을 어떻게 분할하는지 확인할 수 있습니다. 
+    플롯팅하기 위해 선택한 두 개의 열을 따라서만 파티션을 수행하면 
+    결과 직장이 겹치지 않고 전체 데이터 세트를 덮을 수 있습니다.
+    '''
+
+    def build_indexes(df):
+        indexes = {}
+        for column in cate_col:
+            values = sorted(df[column].unique())
+            indexes[column] = {x: y for x, y in zip(values, range(len(values)))}
+        return indexes
+
+    def get_coords(df, column, partition, indexes, offset=0.1):
+        if column in cate_col:
+            sv = df[column][partition].sort_values()
+            l, r = indexes[column][sv[sv.index[0]]], indexes[column][sv[sv.index[-1]]] + 1.0
+        else:
+            sv = df[column][partition].sort_values()
+            next_value = sv[sv.index[-1]]
+            larger_values = df[df[column] > next_value][column]
+            if len(larger_values) > 0:
+                next_value = larger_values.min()
+            l = sv[sv.index[0]]
+            r = next_value
+        # we add some offset to make the partitions more easily visible
+        l -= offset
+        r += offset
+        return l, r
+
+    def get_partition_rects(df, partitions, column_x, column_y, indexes, offsets=[0.1, 0.1]):
+        rects = []
+        for partition in partitions:
+            xl, xr = get_coords(df, column_x, partition, indexes, offset=offsets[0])
+            yl, yr = get_coords(df, column_y, partition, indexes, offset=offsets[1])
+            rects.append(((xl, yl), (xr, yr)))
+        return rects
+
+    def get_bounds(df, column, indexes, offset=1.0):
+        if column in cate_col:
+            return 0 - offset, len(indexes[column]) + offset
+        return df[column].min() - offset, df[column].max() + offset
+
+    # 생성한 모든 파티션의 경계 직장을 계산합니다.
+
+    # print(rects[:10])
+
+    def plot_rects(df, ax, rects, column_x, column_y, edgecolor='black', facecolor='none'):
+        for (xl, yl), (xr, yr) in rects:
+            ax.add_patch(
+                patches.Rectangle((xl, yl), xr - xl, yr - yl, linewidth=1, edgecolor=edgecolor, facecolor=facecolor,
+                                  alpha=0.5))
+        ax.set_xlim(*get_bounds(df, column_x, indexes))
+        ax.set_ylim(*get_bounds(df, column_y, indexes))
+        ax.set_xlabel(column_x)
+        ax.set_ylabel(column_y)
+
+    def agg_categorical_column(series):
+        # workearound here
+        series.astype('category')
+        return [','.join(set(series))]
+
+    def agg_numerical_column(series):
+        return [series.mean()]
+
+    def build_anonymized_dataset(df, partitions, feature_columns, sensitive_column, max_partitions=None):
+        aggregations = {}
+        for column in feature_columns:
+            if column in cate_col:
+                aggregations[column] = agg_categorical_column
+            else:
+                aggregations[column] = agg_numerical_column
+        rows = []
+        for i, partition in enumerate(partitions):
+            if i % 100 == 1:
+                print("Finished {} partitions...".format(i))
+            if max_partitions is not None and i > max_partitions:
+                break
+            grouped_columns = df.loc[partition].agg(aggregations, squeeze=False)
+            # print(grouped_columns.iloc[0])
+            sensitive_counts = df.loc[partition].groupby(sensitive_column).agg({sensitive_column: 'count'})
+            values = {}
+            for name, val in grouped_columns.items():
+                values[name] = val[0]
+            for sensitive_value, count in sensitive_counts[sensitive_column].items():
+                if count == 0:
+                    continue
+                values.update({
+                    sensitive_column: sensitive_value,
+                    'count': count,
+
+                })
+                rows.append(values.copy())
+        return pd.DataFrame(rows)
+
+    '''
+
+    print('범주형 열 및 민감 속성을 사용하여 결과 데이터 프레임을 정렬합니다.')
+    print(dfn)
+    dfn.to_csv('syn_dft.scv', index = False)
+
+
+
+
+    l-다양성 구현
+    l-다양성을 구현하기 위해 다음과 같은 작업을 수행할 수 있습니다.
+
+    is_valid 함수를 수정하여 주어진 파티션의 크기를 확인할 뿐만 아니라 
+    파티션의 중요한 특성 값이 충분히 다양한지 확인하십시오.
+    분할 함수를 수정하여 다양한 분할을 생성합니다(가능한 경우).
+    지정된 파티션에 중요한 특성의 다른 값이 l개 이상 포함되어 있으면 
+    True를 반환하고 그렇지 않으면 False를 반환하는 검증기 함수를 구현합니다.
+    -> 여기서는 열 2개이므로 l=2
+    '''
+
+    def diversity(df, partition, column):
+        return len(df[column][partition].unique())
+
+    def is_l_diverse(df, partition, sensitive_column, l=2):
+        """
+        :param               df: The dataframe for which to check l-diversity
+        :param        partition: The partition of the dataframe on which to check l-diversity
+        :param sensitive_column: The name of the sensitive column
+        :param                l: The minimum required diversity of sensitive attribute values in the partition
+        """
+        return diversity(df, partition, sensitive_column) >= l
+
+    # 이 방법을 데이터에 적용하고 결과가 어떻게 변하는지 봅시다.
+
+    '''
+    t-closiness 구현
+    보시다시피, 값 다양성이 낮은 영역의 경우, l-diverse 방법은 
+    중요한 속성의 한 값에 대한 매우 많은 항목과 다른 값에 대한 하나의 항목만 
+    포함하는 파티션을 생성합니다. 이는 데이터셋에 있는 사람에 대한 
+    "타당한 거부 가능성"이 있는 반면(모든 사람이 "아웃라이어"가 될 수 있기 때문에)
+     적수는 여전히 그 사람의 속성 가치에 대해 매우 확실할 수 있다.
+
+    t-유효성은 지정된 파티션에서 중요한 속성 값의 분포가 전체 데이터 세트의 값 분포와
+     유사하도록 함으로써 이 문제를 해결합니다.
+
+    파티션이 충분히 다양하면 True를 반환하고 그렇지 않으면 False를 반환하는 
+    is_valid 함수의 버전을 구현합니다. 
+    다양성을 측정하기 위해 전체 데이터 세트에 대한 민감한 속성의 경험적 확률 분포와 
+    파티션에 대한 분포 사이의 콜모고로프-스미르노프 거리를 계산한다. 
+    힌트: 콜모고로프-스미르노프 거리는 두 분포 사이의 최대 거리입니다. 
+    중요한 특성은 범주형 값이라고 가정할 수 있습니다.
+    '''
+
+    # generate the global frequencies for the sensitive column
+
+    def t_closeness(df, partition, column, global_freqs):
+        total_count = float(len(partition))
+        d_max = None
+        group_counts = df.loc[partition].groupby(column)[column].agg('count')
+        for value, count in group_counts.to_dict().items():
+            p = count / total_count
+            d = abs(p - global_freqs[value])
+            if d_max is None or d > d_max:
+                d_max = d
+        return d_max
+
+    def is_t_close(df, partition, sensitive_column, global_freqs, p=0.2):
+        """
+        :param               df: The dataframe for which to check l-diversity
+        :param        partition: The partition of the dataframe on which to check l-diversity
+        :param sensitive_column: The name of the sensitive column
+        :param     global_freqs: The global frequencies of the sensitive attribute values
+        :param                p: The maximum allowed Kolmogorov-Smirnov distance
+        """
+        if not sensitive_column in cate_col:
+            raise ValueError("this method only works for categorical values")
+        return t_closeness(df, partition, sensitive_column, global_freqs) <= p
+        # --------------------------------함수 끝 --------------------
+
+    obj = g.user.username
+    s3 = boto3.resource('s3')
+    bucket_name = 'origindir'
+    bucket = s3.Bucket(name=bucket_name)
+    aa = obj + '.csv'
+    synth_data = pd.read_csv("C:/finalproject/myproject/pybo/synth_dir/" + obj + str(index_add_counter) + ".csv")
+    # synth_data = pd.read_csv("C:/finalproject/myproject/pybo/synth_dir/" + obj + str(index_add_counter) + ".csv")
+    original_data = pd.read_csv(io.BytesIO(bucket.Object(aa).get()['Body'].read()))
+
+    cate_col = []
+    for i in range(0, len(synth_data.columns)):
+        if synth_data.dtypes[i] == 'object':
+            cate_col.append(synth_data.columns[i])
+
+    cate_col2 = []
+    for i in range(0, len(synth_data.columns)):
+        if synth_data.dtypes[i] != 'object':
+            cate_col2.append(synth_data.columns[i])
+
+    full_spans = get_spans(original_data, original_data.index)
+
+    feature_columns = cate_col2
+    # sensitive_column = risk_category[0]
+    sensitive_column = str(risk_category[0][0])
+
+    origin_partitions = partition_dataset(original_data, feature_columns, sensitive_column, full_spans,
+                                          is_k_anonymous)
+
+    indexes = build_indexes(original_data)
+    column_x, column_y = feature_columns[:2]
+    rects = get_partition_rects(original_data, origin_partitions, column_x, column_y, indexes, offsets=[0.0, 0.0])
+
+    global_freqs = {}
+    total_count = float(len(original_data))
+    group_counts = original_data.groupby(sensitive_column)[sensitive_column].agg('count')
+    for value, count in group_counts.to_dict().items():
+        p = count / total_count
+        global_freqs[value] = p
+
+    # print(global_freqs)
+
+    # 데이터 세트에 적용
+    finished_t_close_partitions = partition_dataset(original_data, feature_columns, sensitive_column, full_spans,
+                                                    lambda *args: is_k_anonymous(*args) and is_t_close(*args,
+                                                                                                       global_freqs))
+    # print(len(finished_t_close_partitions))
+
+    dft = build_anonymized_dataset(original_data, finished_t_close_partitions, feature_columns, sensitive_column)
+
+    # Let's see how t-closeness fares
+    dft.sort_values([column_x, column_y, sensitive_column])
+    # print(dft)
+    dft.to_csv('C:/finalproject/myproject/pybo/uploads/origin_dft' + obj + '.csv', index=False)
+
+    # --------------------------------------- 위에가 원본 T근접성 구하기----------------
+
+    full_spans = get_spans(synth_data, synth_data.index)
+
+    synth_partitions = partition_dataset(synth_data, feature_columns, sensitive_column, full_spans, is_k_anonymous)
+
+    indexes = build_indexes(synth_data)
+    column_x, column_y = feature_columns[:2]
+    rects = get_partition_rects(synth_data, synth_partitions, column_x, column_y, indexes, offsets=[0.0, 0.0])
+
+    global_freqs = {}
+    total_count = float(len(synth_data))
+    group_counts = synth_data.groupby(sensitive_column)[sensitive_column].agg('count')
+    for value, count in group_counts.to_dict().items():
+        p = count / total_count
+        global_freqs[value] = p
+
+    # print(global_freqs)
+
+    # 데이터 세트에 적용
+    finished_t_close_partitions = partition_dataset(synth_data, feature_columns, sensitive_column, full_spans,
+                                                    lambda *args: is_k_anonymous(*args) and is_t_close(*args,
+                                                                                                       global_freqs))
+    # print(len(finished_t_close_partitions))
+
+    dft = build_anonymized_dataset(synth_data, finished_t_close_partitions, feature_columns, sensitive_column)
+
+    # Let's see how t-closeness fares
+    dft.sort_values([column_x, column_y, sensitive_column])
+    # print(dft)
+    dft.to_csv('C:/finalproject/myproject/pybo/uploads/synth_dft' + obj + '.csv', index=False)
+
+    # --------------------- 여기까지 재현 T근접성---------------------------
+
+    aa = risk_num[0][0]
+    synth_data = synth_data[aa]
+    original_data = original_data[aa]
+    synth_data = synth_data.astype('float64')
+    original_data = original_data.astype('float64')
+    # print(synth_data)
+    '''
+    synth_data = synth_data.sort_values(aa)
+    original_data = original_data.sort_values(aa)
+    '''
+    origin_identifier = np.array(original_data)
+    synth_identifier = np.array(synth_data)
+
+    vali = pd.read_csv('C:/finalproject/myproject/pybo/uploads/origin_dft' + obj + '.csv')
+
+    # col = ['age','count']
+    col = [aa, 'count']
+    # vali = vali[col]
+    vali = vali[col]
+
+    ori3 = []
+    ori3 = list(vali[aa])
+    ori33 = list(vali['count'])
+    ori333 = []
+    for i in range(0, len(ori3)):
+        if ori33[i] > 1:
+            for i in range(0, ori33[i]):
+                ori333.append(ori3[i])
+        else:
+            ori333.append(ori3[i])
+
+    vali_identifier = np.array(ori333)
+
+    EMD_values = pyemd.emd_samples(
+        first_array=origin_identifier,
+        second_array=vali_identifier,
+        extra_mass_penalty=0.0,
+        distance='euclidean',
+        normalized=True,
+        bins='auto',
+        range=None
+    )
+    # print('원본 : ' + str(EMD_values))
+
+    vali2 = pd.read_csv('C:/finalproject/myproject/pybo/uploads/synth_dft' + obj + '.csv')
+
+    # col = ['age','count']
+    col = [aa, 'count']
+    # vali = vali[col]
+    vali2 = vali2[col]
+    syn3 = []
+    syn3 = list(vali2[aa])
+    syn33 = list(vali2['count'])
+    syn333 = []
+    for i in range(0, len(syn3)):
+        if syn33[i] > 1:
+            for i in range(0, syn33[i]):
+                syn333.append(syn3[i])
+        else:
+            syn333.append(syn3[i])
+
+    vali2_identifier = np.array(syn333)
+
+    EMD_values2 = pyemd.emd_samples(
+        first_array=synth_identifier,
+        second_array=vali2_identifier,
+        extra_mass_penalty=0.0,
+        distance='euclidean',
+        normalized=True,
+        bins='auto',
+        range=None
+    )
+    # print('재현 : ' + str(EMD_values2))
+    return render_template('risk3.html', origin=EMD_values, synth=EMD_values2)
+
+
