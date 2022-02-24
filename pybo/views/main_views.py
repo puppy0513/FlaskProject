@@ -603,6 +603,7 @@ def risk2():
 
     df_col = []
 
+    risk_category.clear()
     for i in range(0, len(fff.columns)):
         if fff.dtypes[i] != 'object':
             df_col.append(fff.columns[i])
@@ -632,7 +633,7 @@ def target2():
     bucket = s3.Bucket(name=bucket_name)
     aa = obj + '.csv'
     fff = pd.read_csv(io.BytesIO(bucket.Object(aa).get()['Body'].read()))
-
+    risk_num.clear()
     list3 = []
     if request.method == 'POST':
         for i in range(0, len(fff.columns)):
