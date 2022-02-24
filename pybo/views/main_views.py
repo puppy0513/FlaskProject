@@ -558,7 +558,7 @@ def target():
         obj = g.user.username
         f = request.files['file']
         if f and allowed_file(f.filename):
-            f.save("/home/ubuntu/projects/FlaskProject/pybo/pybo/uploads/" + obj + '.csv')
+            f.save("/home/ubuntu/projects/FlaskProject/pybo/uploads/" + obj + '.csv')
         else:
             return render_template('extension_error.html')
 
