@@ -1071,6 +1071,7 @@ def risk3():
     syn = syn.drop(['index', 'count'], axis=1)
     # synth_data.to_csv('1st.csv')
     new_syn2 = syn.iloc[:10]
+
     syn.to_csv('/home/ubuntu/projects/FlaskProject/pybo/synth_dir/final' + obj + '.csv', index=False)
 
     # print(syn)
@@ -1082,10 +1083,6 @@ def down():
 
     syn = "/home/ubuntu/projects/FlaskProject/pybo/synth_dir/final" + obj + ".csv"
 
-    try:
-        os.remove(syn)
-    except OSError:
-        pass
 
     return send_file(syn, as_attachment=True)
 
