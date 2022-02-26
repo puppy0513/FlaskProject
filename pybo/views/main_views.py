@@ -85,6 +85,12 @@ def render_file():
     except OSError:
         pass
 
+    file22 = "/home/ubuntu/projects/FlaskProject/pybo/synth_dir/final" + obj + ".json"
+    try:
+        os.remove(file22)
+    except OSError:
+        pass
+
     list2 = ['origincorr', 'originreg', 'synthcorr', 'synthreg', 'dis']
     for i in range(0, len(list2)):
         file3 = "/home/ubuntu/projects/FlaskProject/pybo/static/img_dir/" + obj + list2[i] + ".png"
@@ -1067,7 +1073,7 @@ def risk3():
     new_syn2 = syn.iloc[:10]
     syn.to_csv('/home/ubuntu/projects/FlaskProject/pybo/synth_dir/final' + obj + '.csv', index=False)
 
-    print(syn)
+    # print(syn)
 
     return render_template('risk3.html', tables=[new_syn2.to_html()], titles=[''])
 @bp.route('/down')
