@@ -651,7 +651,8 @@ def target2():
     return render_template('loading2.html', my_data=some_data)
 
 
-@bp.route('/risk3', methods=['GET', 'POST'])
+
+@bp.route('/risk3', methods = ['GET', 'POST'])
 def risk3():
     # -------------------------------------- 여기부터는 T근접성 함수------------------------------------
 
@@ -954,9 +955,8 @@ def risk3():
             cate_col.append(synth_data.columns[i])
 
     cate_col2 = []
-    for i in range(0, len(synth_data.columns)):
-        if synth_data.dtypes[i] != 'object':
-            cate_col2.append(synth_data.columns[i])
+    for i in range(0, len(risk_num[0])):
+        cate_col2.append(risk_num[0][i])
 
     full_spans = get_spans(original_data, original_data.index)
 
@@ -991,9 +991,10 @@ def risk3():
     # Let's see how t-closeness fares
     dft.sort_values([column_x, column_y, sensitive_column])
     # print(dft)
-    dft.to_csv('/home/ubuntu/projects/FlaskProject/pybo/uploads/origin_dft' + obj + '.csv', index=False)
+    # dft.to_csv('/home/ubuntu/projects/FlaskProject/pybo/uploads/origin_dft' + obj + '.csv', index=False)
 
     # --------------------------------------- 위에가 원본 T근접성 구하기----------------
+
 
     full_spans = get_spans(synth_data, synth_data.index)
 
@@ -1023,83 +1024,62 @@ def risk3():
     # Let's see how t-closeness fares
     dft.sort_values([column_x, column_y, sensitive_column])
     # print(dft)
-    dft.to_csv('/home/ubuntu/projects/FlaskProject/pybo/uploads/synth_dft' + obj + '.csv', index=False)
 
-    # --------------------- 여기까지 재현 T근접성---------------------------
+    synth_data_drop = synth_data.drop(cate_col2, axis=1)
 
-    aa = risk_num[0][0]
-    synth_data = synth_data[aa]
-    original_data = original_data[aa]
-    synth_data = synth_data.astype('float64')
-    original_data = original_data.astype('float64')
+    new_syn = pd.concat([synth_data_drop, dft], axis=1)
+
+    # new_syn.to_csv('/home/ubuntu/projects/FlaskProject/pybo/uploads/synth_dft' + obj + '.csv', index=False)
+
+    list_drop = cate_col2
+    list_drop.append('count')
+    list_drop.append(risk_category[0][0])
+    drop_num = len(list_drop)
+
+    synth_data2 = new_syn[list_drop]
+    # synth_data2.to_csv('/home/ubuntu/projects/FlaskProject/pybo/uploads/synth_data2.csv', index=False)
+    # print(synth_data2)
+    # new_syn = new_syn.drop(list_drop, axis=1)
+    new_syn = new_syn.iloc[:,:-(drop_num)]
     # print(synth_data)
-    '''
-    synth_data = synth_data.sort_values(aa)
-    original_data = original_data.sort_values(aa)
-    '''
-    origin_identifier = np.array(original_data)
-    synth_identifier = np.array(synth_data)
+    # new_syn.to_csv('/home/ubuntu/projects/FlaskProject/pybo/uploads/new_syn.csv', index=False)
 
-    vali = pd.read_csv('/home/ubuntu/projects/FlaskProject/pybo/uploads/origin_dft' + obj + '.csv')
 
-    # col = ['age','count']
-    col = [aa, 'count']
-    # vali = vali[col]
-    vali = vali[col]
-
-    ori3 = []
-    ori3 = list(vali[aa])
-    ori33 = list(vali['count'])
-    ori333 = []
-    for i in range(0, len(ori3)):
-        if ori33[i] > 1:
-            for i in range(0, ori33[i]):
-                ori333.append(ori3[i])
+    synth_data2 = synth_data2.dropna()
+    df2 = pd.DataFrame()
+    df3 = pd.DataFrame()
+    for i in range(0, len(synth_data2)):
+        if synth_data2['count'][i] > 1:
+            b = int(synth_data2['count'][i])
+            for i in range(0, b):
+                df2 = df2.append(synth_data2.loc[i:i])
         else:
-            ori333.append(ori3[i])
+            df3 = df3.append(synth_data2.loc[i:i])
 
-    vali_identifier = np.array(ori333)
+    df4 = pd.concat([df2, df3], axis=0)
+    df4 = df4.reset_index()
+    syn = pd.concat([new_syn, df4], axis=1)
 
-    EMD_values = pyemd.emd_samples(
-        first_array=origin_identifier,
-        second_array=vali_identifier,
-        extra_mass_penalty=0.0,
-        distance='euclidean',
-        normalized=True,
-        bins='auto',
-        range=None
-    )
-    # print('원본 : ' + str(EMD_values))
+    a = len(syn.columns)
+    syn = syn.iloc[:, :a - 2]
+    syn = syn.drop(['index', 'count'], axis=1)
+    # synth_data.to_csv('1st.csv')
+    new_syn2 = syn.iloc[:10]
+    syn.to_csv('/home/ubuntu/projects/FlaskProject/pybo/synth_dir/final' + obj + '.csv', index=False)
 
-    vali2 = pd.read_csv('/home/ubuntu/projects/FlaskProject/pybo/uploads/synth_dft' + obj + '.csv')
+    print(syn)
 
-    # col = ['age','count']
-    col = [aa, 'count']
-    # vali = vali[col]
-    vali2 = vali2[col]
-    syn3 = []
-    syn3 = list(vali2[aa])
-    syn33 = list(vali2['count'])
-    syn333 = []
-    for i in range(0, len(syn3)):
-        if syn33[i] > 1:
-            for i in range(0, syn33[i]):
-                syn333.append(syn3[i])
-        else:
-            syn333.append(syn3[i])
+    return render_template('risk3.html', tables=[new_syn2.to_html()], titles=[''])
+@bp.route('/down')
+def down():
+    obj = g.user.username
 
-    vali2_identifier = np.array(syn333)
+    syn = "/home/ubuntu/projects/FlaskProject/pybo/synth_dir/final" + obj + ".csv"
 
-    EMD_values2 = pyemd.emd_samples(
-        first_array=synth_identifier,
-        second_array=vali2_identifier,
-        extra_mass_penalty=0.0,
-        distance='euclidean',
-        normalized=True,
-        bins='auto',
-        range=None
-    )
-    # print('재현 : ' + str(EMD_values2))
-    return render_template('risk3.html', origin=EMD_values, synth=EMD_values2)
+    try:
+        os.remove(syn)
+    except OSError:
+        pass
 
+    return send_file(syn, as_attachment=True)
 

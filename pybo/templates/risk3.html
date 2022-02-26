@@ -8,12 +8,20 @@
 </head>
 <body>
 <div class="container">
-    <p>원본데이터 EMD 값 : {{origin}}</p>
-    <p>재현데이터 EMD 값 : {{synth}}</p>
+    <table class="table table-dark">
+                <!--Displaying the converted table-->
+                     {% for table in tables %}
+                    {{titles[loop.index]}}
+                    <td>
+                    {{ table|safe }}
+                        </td>
+                    {% endfor %}
 
-
+        </table>
+        <a href="{{ url_for('main.down') }}" class="btn btn-primary" >T-근접성 정제 완료 다운</a>
 
     <a href="{{ url_for('main.render_file') }}" class="btn btn-primary" >돌아가기</a>
+
 </div>
 </body>
 </html>
