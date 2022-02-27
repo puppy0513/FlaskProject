@@ -602,7 +602,7 @@ def partsynth_generate():
     spop.fit(rrf, dtypes)
     synth_df = spop.generate(len(rrf))
     df2 = rrf.drop(first[0], axis=1)
-
+    add_divide()
     synth_df2 = synth_df[first[0]]
     result = pd.concat([synth_df2, df2], axis=1)
     result.to_csv("/home/ubuntu/projects/FlaskProject/pybo/synth_dir/" + obj + str(index_add_counter) + ".csv", index=False)
@@ -768,7 +768,7 @@ def partsynth_generate():
     if(EMD_values > EMD_values2):
         df = fff.iloc[:10]
         result2 = result.iloc[:10]
-        add_divide()
+
 
         return render_template('partsynth_generate.html', tables=[df.to_html()], titles=[''],
                                tables2=[result2.to_html()],
