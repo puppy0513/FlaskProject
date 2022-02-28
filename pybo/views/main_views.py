@@ -1030,6 +1030,11 @@ def syn_store():
     except OSError:
         pass
     stst = obj + str(index_add_counter)
+
+    s4 = boto3.resource('s3')
+    obj_file = str(obj) + '.csv'
+    s4.Object('origindir', obj_file).delete()
+
     return render_template('syn_store.html', stst = stst)
 
 
