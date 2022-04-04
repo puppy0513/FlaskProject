@@ -1,0 +1,24 @@
+{
+  "family": "ecscicd",
+  "executionRoleArn": "arn:aws:iam::244516814122:role/ecsTaskExecutionRole",
+  "networkMode": "awsvpc",
+  "containerDefinitions": [
+    {
+      "name": "flasktest",
+      "image": "puppy0513/flasktest:1.0",
+      "portMappings": [
+        {
+          "containerPort": 5000,
+          "hostPort": 5000,
+          "protocol": "tcp"
+        }
+      ],
+      "essential": true
+    }
+  ],
+  "requiresCompatibilities": [
+    "FARGATE"
+  ],
+  "cpu": "512",
+  "memory": "1024"
+}
